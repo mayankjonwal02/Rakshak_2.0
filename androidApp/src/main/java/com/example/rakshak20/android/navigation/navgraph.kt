@@ -3,27 +3,71 @@ package com.example.rakshak20.android.navigation
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.rakshak20.android.functions.MyBluetooth
-import com.example.rakshak20.android.windows.connection
-import com.example.rakshak20.android.windows.splash
-import com.example.rakshak20.android.windows.visualisation
+import com.example.rakshak20.android.windows.*
 
 //  coe for navigation
 
 @Composable
-fun navgraph(navHostController: NavHostController,context: Context,start : String) {
+fun navgraph(
 
-    val bluetooth : MyBluetooth = viewModel()
-    bluetooth.initialize(context)
+    navHostController: NavHostController,
+    context: Context,
+    start: String) {
+
+
     NavHost(navController = navHostController, startDestination = start)
     {
         composable(screen.splash.route)  // splash screen
         {
             splash(navHostController,context)
         }
+
+
+
+        composable(screen.login.route)
+        {
+            LoginScreen(navHostController,context)
+        }
+
+        composable(screen.registration.route)
+        {
+            RegistrationScreen(navHostController,context)
+        }
+
+        composable(screen.main.route)
+        {
+            mainwindow(navHostController,context)
+        }
+
+        composable(screen.ipscreen.route)
+        {
+            ipscreen(context = context, navHostController)
+        }
+
+
+
+    }
+}
+
+
+
+@Composable
+fun navgraph1(
+    oldnavcon : NavController,
+    navHostController: NavHostController,
+    context: Context,
+    start: String) {
+
+    val bluetooth : MyBluetooth = viewModel()
+    bluetooth.initialize(context)
+    NavHost(navController = navHostController, startDestination = start)
+    {
+
 
         composable(screen.visualise.route) // visualisation screen
         {
@@ -37,6 +81,17 @@ fun navgraph(navHostController: NavHostController,context: Context,start : Strin
 
         }
 
+        composable(screen.splash.route)  // splash screen
+        {
+            splash(navHostController,context)
+        }
+
+
+
+
+
     }
 }
+
+
 

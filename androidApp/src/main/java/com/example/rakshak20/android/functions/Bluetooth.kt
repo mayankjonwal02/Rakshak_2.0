@@ -1,5 +1,7 @@
 package com.example.rakshak20.android.functions
 
+import DBHandler
+import PatientData
 import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
@@ -7,11 +9,13 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Handler
 import android.os.Message
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.runtime.remember
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import co.yml.charts.common.extensions.isNotNull
@@ -32,8 +36,14 @@ class MyBluetooth() : ViewModel() {
 //    val _data = MutableLiveData<Int>(0)
 //    val data : LiveData<Int> get() = _data
 
-    val _data = MutableStateFlow<Int>(0)
-    val data : StateFlow<Int> = _data
+    lateinit var sp : SharedPreferences
+    lateinit var dbHandler : DBHandler
+
+     var patientid : String? = null
+
+
+    val _navigated = MutableStateFlow<Int>(0)
+    val navigated : StateFlow<Int> = _navigated
 
     val _paireddevices = MutableStateFlow<List<BluetoothDevice?>>(emptyList())
     val paireddevices : StateFlow<List<BluetoothDevice?>> = _paireddevices
@@ -46,6 +56,13 @@ class MyBluetooth() : ViewModel() {
 
     val _HeartRatedata = MutableStateFlow<List<Point>>(emptyList())
     val HeartRatedata : StateFlow<List<Point>> = _HeartRatedata
+
+    val _SPO2data = MutableStateFlow<List<Point>>(emptyList())
+    val SPO2data : StateFlow<List<Point>> = _SPO2data
+
+
+    val _TEMPdata = MutableStateFlow<List<Point>>(emptyList())
+    val TEMPdata : StateFlow<List<Point>> = _TEMPdata
 
     val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private val STATE_LISTENING = 1
@@ -68,14 +85,21 @@ class MyBluetooth() : ViewModel() {
     fun initialize(context: Context)
     {
         this.context = context
+        sp = getSharedPreferences(this.context)
+        dbHandler = DBHandler(this.context)
+        patientid = sp.getString("patientid","").toString()
     }
 
 
-    fun increase()
+    fun visualise()
     {
-       _data.value++
+        _navigated.value = 1
     }
 
+    fun connect()
+    {
+        _navigated.value = 0
+    }
 
     fun fetchPairedDevices()
     {
@@ -143,32 +167,58 @@ class MyBluetooth() : ViewModel() {
 
     fun handledata(data : String)
     {
-        for( i in data)
-        {
-            if(currentlist.contains(i.toString()))
-            {
-                sharedvalue = sharedvalue + i
+//        Toast.makeText(context,data,Toast.LENGTH_LONG).show()
+        var inputStringlist = data.split(" ").toList<String>()
 
+        var ecg : Float? = null
+        var heartrate : Float? = null
+        var spo2 : Float? = null
+        var temp : Float? = null
+        var patientData : PatientData
+
+
+        if(inputStringlist[0] == "@" && inputStringlist[1] == "@" && inputStringlist[2] == "@")
+        {
+            Toast.makeText(context,"Place your Finger", Toast.LENGTH_SHORT).show()
+        }
+        else {
+            if (inputStringlist[0] != "@") {
+                _ECGdata.value += Point(_ECGdata.value.size.toFloat(), inputStringlist[0].toFloat())
+                ecg = inputStringlist[0].toFloat()
+            } else {
+                Toast.makeText(context, "ECG value out of range", Toast.LENGTH_SHORT).show()
+                heartrate = inputStringlist[1].toFloat()
             }
-            else if(previouslist.contains(i.toString()))
-            {
-                if( i.toString() == "@")
-                {
-                    sharedvalue = ""
-                }
-                else if(i.toString() == "#")
-                {
-                    Toast.makeText(context,"ecg data ${sharedvalue.toFloat()}",Toast.LENGTH_SHORT).show()
-                    _ECGdata.value = _ECGdata.value.plus(Point((_ECGdata.value.size).toFloat(),sharedvalue.toFloat()," ecg data "))
-                    sharedvalue = ""
-                }
-                else if(i.toString() == "%")
-                {
-                    Toast.makeText(context," heartrate data ${sharedvalue.toFloat()}",Toast.LENGTH_SHORT).show()
-                    _HeartRatedata.value = _HeartRatedata.value.plus(Point((_HeartRatedata.value.size ).toFloat(),sharedvalue.toFloat(),"HeartRate data"))
-                    sharedvalue = ""
-                }
+            if (inputStringlist[1] != "@") {
+                _HeartRatedata.value += Point(
+                    _HeartRatedata.value.size.toFloat(),
+                    inputStringlist[1].toFloat())
+
+                spo2 = inputStringlist[2].toFloat()
+            } else {
+                Toast.makeText(context, "Heart Rate value out of range", Toast.LENGTH_SHORT).show()
+                temp = inputStringlist[3].toFloat()
             }
+            if (inputStringlist[2] != "@") {
+                _SPO2data.value += Point(
+                    _SPO2data.value.size.toFloat(),
+                    inputStringlist[2].toFloat()
+                )
+            } else {
+                Toast.makeText(context, "SPO2 value out of range", Toast.LENGTH_SHORT).show()
+            }
+            if (inputStringlist[3] != "@") {
+                _TEMPdata.value += Point(
+                    _TEMPdata.value.size.toFloat(),
+                    inputStringlist[3].toFloat()
+                )
+            } else {
+                Toast.makeText(context, "Temperature value out of range", Toast.LENGTH_SHORT).show()
+            }
+
+//            patientData = PatientData(patientId = patientid , ecg =  ecg , heartRate = heartrate , spo2 = spo2 , temperature = temp)
+
+            dbHandler.addPatientData(patientid,ecg,heartrate,spo2,temp)
         }
     }
 

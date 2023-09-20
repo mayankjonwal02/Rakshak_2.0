@@ -10,9 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
-import com.example.rakshak20.Greeting
 import com.example.rakshak20.android.navigation.navgraph
 import com.example.rakshak20.android.navigation.screen
+import com.example.rakshak20.android.windows.*
+import demopage3
+import demopage4
+
+//import com.example.rakshak20.android.windows.SubmitDataForm
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +29,13 @@ class MainActivity : ComponentActivity() {
                 ) {
                     var navController = rememberNavController()
                     var context = LocalContext.current
-                    navgraph(navHostController = navController, context = context, start = screen.splash.route)
+//
+                    navgraph( navHostController = navController, context = context, start = screen.splash.route)
+//                        SubmitDataForm()
+//                    RegistrationScreen(navHostController = navController, context = context)
+//                    LoginScreen(navHostController = navController, context = context)
+//                    fetchpage()
+//                        demopage4()
                 }
             }
         }

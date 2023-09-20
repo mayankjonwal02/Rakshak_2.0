@@ -28,9 +28,15 @@ fun LineChartScreen(myBluetooth: MyBluetooth,type : String) {
 
     val data = if (type == SCREEN1) {
         myBluetooth.ECGdata.collectAsState(emptyList()).value
-    } else {
+    } else if(type == SCREEN2){
         myBluetooth.HeartRatedata.collectAsState(emptyList()).value
+    }else if(type == SCREEN3){
+        myBluetooth.SPO2data.collectAsState(emptyList()).value
     }
+    else {
+        myBluetooth.TEMPdata.collectAsState(emptyList()).value
+    }
+
 
 
 
@@ -50,8 +56,17 @@ fun LineChartScreen(myBluetooth: MyBluetooth,type : String) {
             .axisLabelColor(graphcolor)
             .build()
 
-        val maxDataValue = remember { (data.maxOfOrNull { it.y }?.plus(1))?.roundToInt() ?: 0  }
+        val maxDataValue = if (type == SCREEN1) {
+             450
 
+        } else if(type == SCREEN2){
+            170
+        }else if(type == SCREEN3){
+           100
+        }
+        else {
+             50
+        }
         val yAxisData = AxisData.Builder()
             .steps(10)  // Fixed number of steps for the Y-axis
             .axisStepSize(30.dp)  // Adjust the step size for the Y-axis

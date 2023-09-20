@@ -21,13 +21,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import co.yml.charts.common.extensions.isNotNull
 import com.example.rakshak20.android.functions.MyBluetooth
+import com.example.rakshak20.android.functions.getSharedPreferences
 import com.example.rakshak20.android.navigation.screen
 
 
 @Composable
 fun splash(navHostController: NavHostController, context: Context) {
 
+    getpermissions()  //    requesting permissions
     var iconsize = remember {
         androidx.compose.animation.core.Animatable(0f)
     }
@@ -43,6 +46,10 @@ fun splash(navHostController: NavHostController, context: Context) {
             .size(iconsize.value.dp))
     }
 
+    var sp = remember {
+
+    getSharedPreferences(context)}
+
 
 
     LaunchedEffect(Unit)
@@ -52,8 +59,16 @@ fun splash(navHostController: NavHostController, context: Context) {
             delayMillis = 30,
             easing = LinearOutSlowInEasing
         ))
+        if(sp?.getString("ipaddress","0.0.0.0") == "0.0.0.0" || sp?.getString("patientid","") == "" || sp?.getString("password","") == "")
+        {
+            navHostController.navigate(screen.ipscreen.route)
+        }
+        else
+        {
+            navHostController.navigate(screen.main.route)
+        }
 
-        navHostController.navigate(screen.connection.route)
+
     }
     
 }

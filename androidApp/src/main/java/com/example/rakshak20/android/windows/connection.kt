@@ -3,6 +3,7 @@ package com.example.rakshak20.android.windows
 import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -32,13 +33,40 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
 import com.example.rakshak20.android.functions.MyBluetooth
+import com.example.rakshak20.android.functions.getSharedPreferences
+
 import com.example.rakshak20.android.navigation.screen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import java.io.IOException
 
 @Composable
 fun connection(navHostController: NavHostController, context: Context, mybluetooth: MyBluetooth) {
 
-    getpermissions()  //    requesting permissions
+    val navigated by mybluetooth.navigated.collectAsState()
+    var deviceAddress : String = ""
+    var sp = remember{
+        getSharedPreferences(context)
+    }
+//    mybluetooth.connect()
+//    try
+//    {
+//        if (mybluetooth.bluetoothAdapter.isEnabled) {
+//            deviceAddress = sp?.getString("bluetoothAddress","").toString()
+//            if(deviceAddress != "")
+//            {
+//                var device = mybluetooth.bluetoothAdapter.getRemoteDevice(deviceAddress)
+//                mybluetooth.clientclass(device).start()
+//            }
+//
+//        }
+//    }
+//    catch (e:IOException)
+//    {
+//        Toast.makeText(context,e.message.toString(),Toast.LENGTH_LONG).show()
+//    }
 
     var intentlauncher =  rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult())
     {
@@ -70,7 +98,7 @@ fun connection(navHostController: NavHostController, context: Context, mybluetoo
                 
             }
             Card(modifier = Modifier
-                .padding(20.dp)
+                .padding(10.dp)
                 .fillMaxWidth()
                 .height(300.dp),
                 backgroundColor = Color.Blue,
@@ -85,6 +113,7 @@ fun connection(navHostController: NavHostController, context: Context, mybluetoo
                         .clickable {
                             if (item != null) {
                                 try {
+//                                    sp?.edit()?.putString("bluetoothAddress",item.address)?.apply()
                                     mybluetooth
                                         .clientclass(item)
                                         .start()
@@ -126,13 +155,14 @@ fun connection(navHostController: NavHostController, context: Context, mybluetoo
             )
 
             if(status == "Connected"){
+
                 OutlinedButton(
                     onClick = { navHostController.navigate(screen.visualise.route) },
                     colors = ButtonDefaults.outlinedButtonColors(
                         backgroundColor = Color.Blue,
                         contentColor = Color.White
                     ),
-                    modifier = Modifier.padding(65.dp)
+                    modifier = Modifier.padding(15.dp)
                 ) {
                     Text(text = "Proceed", fontSize = 20.sp)
 

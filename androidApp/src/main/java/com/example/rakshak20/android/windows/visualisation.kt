@@ -22,6 +22,8 @@ import com.example.rakshak20.android.functions.MyBluetooth
 
 var SCREEN1 = "ecg"
 var SCREEN2 = "heartrate"
+var SCREEN3 = "spo2"
+var SCREEN4 = "temp"  // spo2, temp
 @Composable
 fun visualisation(context: Context, mybluetooth: MyBluetooth) {
 
@@ -44,6 +46,8 @@ fun visualisation(context: Context, mybluetooth: MyBluetooth) {
             {
                 SCREEN1 -> LineChartScreen(myBluetooth = mybluetooth, type = SCREEN1)
                 SCREEN2 -> LineChartScreen(myBluetooth = mybluetooth,type = SCREEN2)
+                SCREEN3 -> LineChartScreen(myBluetooth = mybluetooth,type = SCREEN3)
+                SCREEN4 -> LineChartScreen(myBluetooth = mybluetooth,type = SCREEN4)
             }
         }
     }
@@ -94,6 +98,32 @@ fun visualisation(context: Context, mybluetooth: MyBluetooth) {
                     modifier = Modifier.background(
                        if(screen == SCREEN2) Color.Blue else Color.LightGray
                     )
+                )
+                BottomNavigationItem(
+                    selected = screen == SCREEN3,
+                    onClick = {
+                        if (screen != SCREEN3) {
+                            screen = SCREEN3
+                        }
+                    },
+                    label = { Text(text = "SP02") },
+                    icon = {},
+                    selectedContentColor = Color.White,
+                    unselectedContentColor = Color.Gray,
+                    modifier = Modifier.background(if(screen == SCREEN3) Color.Blue else Color.LightGray)
+                )
+                BottomNavigationItem(
+                    selected = screen == SCREEN4,
+                    onClick = {
+                        if (screen != SCREEN4) {
+                            screen = SCREEN4
+                        }
+                    },
+                    label = { Text(text = "T/F") },
+                    icon = {},
+                    selectedContentColor = Color.White,
+                    unselectedContentColor = Color.Gray,
+                    modifier = Modifier.background(if(screen == SCREEN4) Color.Blue else Color.LightGray)
                 )
             }
         }
