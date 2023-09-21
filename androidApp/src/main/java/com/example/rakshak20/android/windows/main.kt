@@ -2,6 +2,7 @@ package com.example.rakshak20.android.windows
 
 import DBHandler
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -122,14 +123,21 @@ fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostControl
             .fillMaxWidth()
 //            .height(10.dp)
             .clickable {
-                CoroutineScope(Dispatchers.IO).launch{
-                    var responce = apiViewmodel.getconnection()
-                    if (responce.equals("Connection Successful")) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    var response = apiViewmodel.getconnection()
+                    withContext(Dispatchers.Main) {
+                        Toast
+                            .makeText(context, response, Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    if (response.equals("Connection Successful")) {
                         var data = dbHandler.getAllPatientData()
-                        for (i in data) {
-                            try {
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    var responce = apiViewmodel.senddataByAPI(
+
+                        CoroutineScope(Dispatchers.Main).launch {
+                            for (i in data) {
+                                try {
+
+                                    var response = apiViewmodel.senddataByAPI(
                                         medicaldata(
                                             patientid = i.patientId,
                                             spo2 = i.spo2,
@@ -139,23 +147,31 @@ fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostControl
                                             timestamp = i.timestamp
                                         )
                                     )
-                                }
 
-                            } catch (e: IOException) {
-                                Toast
-                                    .makeText(context, e.message.toString(), Toast.LENGTH_SHORT)
-                                    .show()
+                                } catch (e: IOException) {
+                                    withContext(Dispatchers.Main) {
+                                        Toast
+                                            .makeText(
+                                                context,
+                                                e.message.toString(),
+                                                Toast.LENGTH_SHORT
+                                            )
+                                            .show()
+                                    }
+                                    Log.e("TAG1", e.message.toString())
+                                }
                             }
+                            dbHandler.deleteAllPatientData()
                         }
-                        dbHandler.deleteAllPatientData()
-                    }
-                    else
-                    {
-                        withContext(Dispatchers.IO){
-                            Toast.makeText(context,"Connection Failed",Toast.LENGTH_SHORT).show()
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            Toast
+                                .makeText(context, "Connection Failed", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
                 }
+
             }
 
             .background(Color.Transparent)

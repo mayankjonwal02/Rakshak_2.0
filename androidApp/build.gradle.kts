@@ -88,4 +88,9 @@ dependencies {
     implementation( "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.72")
     api ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
     api ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5")
+
+    implementation ("com.github.fracassi-marco:JetChart:1.3.7")
+//    implementation ("com.google.accompanist:accompanist-chart:0.16.1" )// Replace x.y.z with the latest version
+
+
 }

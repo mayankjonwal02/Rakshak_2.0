@@ -1,13 +1,11 @@
 package com.example.rakshak20.android.windows
 
 //import LineGraph
+import LineChartComposable
 import android.content.Context
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -17,9 +15,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.rakshak20.android.functions.MyBluetooth
-
+//io.jetchart.line.Point
 var SCREEN1 = "ecg"
 var SCREEN2 = "heartrate"
 var SCREEN3 = "spo2"
@@ -40,14 +44,29 @@ fun visualisation(context: Context, mybluetooth: MyBluetooth) {
         .background(Color.White), contentAlignment = Alignment.Center
     )
     {
-        Crossfade(targetState = screen) {
-            it ->
-            when(it)
-            {
-                SCREEN1 -> LineChartScreen(myBluetooth = mybluetooth, type = SCREEN1)
-                SCREEN2 -> LineChartScreen(myBluetooth = mybluetooth,type = SCREEN2)
-                SCREEN3 -> LineChartScreen(myBluetooth = mybluetooth,type = SCREEN3)
-                SCREEN4 -> LineChartScreen(myBluetooth = mybluetooth,type = SCREEN4)
+        var data = if (screen == SCREEN1) {
+            mybluetooth.ECGdata.collectAsState(emptyList()).value
+        } else if (screen == SCREEN2) {
+            mybluetooth.HeartRatedata.collectAsState(emptyList()).value
+        } else if (screen == SCREEN3) {
+            mybluetooth.SPO2data.collectAsState(emptyList()).value
+        } else {
+            mybluetooth.TEMPdata.collectAsState(emptyList()).value
+        }
+//        var data20 = data.takeLast(20)
+        var datalast = if(data.size > 5) {data.last().value.toString()} else {""}
+        Column(verticalArrangement = Arrangement.Top){
+            Text(text = "${screen.toUpperCase()}  ${datalast}", modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Transparent), textAlign = TextAlign.Center, fontFamily = FontFamily.Default, fontWeight = FontWeight.ExtraBold, fontSize = 30.sp, fontStyle = FontStyle.Normal)
+            Spacer(modifier = Modifier.height(50.dp))
+            Crossfade(targetState = screen) { it ->
+                when (it) {
+                    SCREEN1 -> LineChartComposable(myBluetooth = mybluetooth, type = SCREEN1)
+                    SCREEN2 -> LineChartComposable(myBluetooth = mybluetooth, type = SCREEN2)
+                    SCREEN3 -> LineChartComposable(myBluetooth = mybluetooth, type = SCREEN3)
+                    SCREEN4 -> LineChartComposable(myBluetooth = mybluetooth, type = SCREEN4)
+                }
             }
         }
     }

@@ -1,3 +1,5 @@
+import java.net.URLEncoder
+
 //import org.jetbrains.kotlin.gradle.internal.kapt.incremental.UnknownSnapshot.classpath
 
 plugins {
@@ -8,6 +10,17 @@ plugins {
     kotlin("multiplatform").version("1.8.10").apply(false)
 
 }
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven { url = uri("https://jitpack.io")  } // Correct way to specify Maven repository URL
+        // Add other repositories if needed
+    }
+}
+
+
+
 
 tasks.register("clean", Delete::class) {
     delete(rootProject.buildDir)

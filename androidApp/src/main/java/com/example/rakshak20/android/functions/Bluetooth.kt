@@ -13,13 +13,14 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Handler
 import android.os.Message
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.runtime.remember
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import co.yml.charts.common.extensions.isNotNull
-import co.yml.charts.common.model.Point
+import io.jetchart.line.Point
 import com.example.rakshak20.android.constantvariables.uuid
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -78,6 +79,12 @@ class MyBluetooth() : ViewModel() {
     private var sharedvalue = ""
     private var previouslist = listOf(null,"@","#","%")
     private var currentlist = listOf(".","1","2","3","4","5","6","7","8","9","0")
+    private var ecg : String?= ""
+    private var heartrate : String?= ""
+    private var spo2 : String? = ""
+    private var temp : String? = ""
+    private var pre_delimiter = ""
+
     fun enablebluetooth()
     {
 
@@ -165,61 +172,149 @@ class MyBluetooth() : ViewModel() {
 
     }
 
-    fun handledata(data : String)
-    {
+    fun handledata(data: String) {
 //        Toast.makeText(context,data,Toast.LENGTH_LONG).show()
-        var inputStringlist = data.split(" ").toList<String>()
+        Log.i("TAG1",data)
+        val delimiter = setOf('!', '#', '$', '%', '*')
+        val values = setOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', '@')
 
-        var ecg : Float? = null
-        var heartrate : Float? = null
-        var spo2 : Float? = null
-        var temp : Float? = null
-        var patientData : PatientData
+        for (i in data) {
+            if (i in delimiter) {
+                pre_delimiter = i.toString()
+                if (i == '*') {
+                    handleCompleteData()
+                }
+            } else if (i in values) {
+                if (i != '@') {
+                    handleValue(i)
+                } else {
+                    handleNullValue()
+                }
+            }
+        }
+    }
+    private fun handleValue(value: Char) {
+        when (pre_delimiter) {
+            "!" -> ecg += value
+            "#" -> heartrate += value
+            "$" -> spo2 += value
+            "%" -> temp += value
+        }
+    }
+
+    private fun handleNullValue() {
+        when (pre_delimiter) {
+            "!" -> ecg = "0"
+            "#" -> heartrate ="0"
+            "$" -> spo2 = "0"
+            "%" -> temp = "0"
+        }
+    }
+
+    private fun handleCompleteData() {
+        Log.i("TAG1","$ecg $heartrate $spo2 $temp")
+        dbHandler.addPatientData(patientId = patientid, ecg = ecg.toString().toFloat(),heartRate = heartrate.toString().toFloat() ,spo2 = spo2.toString().toFloat(),temperature = temp.toString().toFloat())
+
+        if(ecg != null){
+            _ECGdata.value =
+                _ECGdata.value + Point( ecg.toString().toFloat(),_ECGdata.value.size.toFloat().toString())
+        }
+        if(heartrate != null){
+            _HeartRatedata.value = _HeartRatedata.value + Point(
+
+                heartrate.toString().toFloat()
+            ,_HeartRatedata.value.size.toFloat().toString(),
+            )
+        }
+        if(spo2 != null){
+            _SPO2data.value =
+                _SPO2data.value + Point( spo2.toString().toFloat(),_SPO2data.value.size.toFloat().toString())
+        }
+        if(temp != null){
+            _TEMPdata.value =
+                _TEMPdata.value + Point( temp.toString().toFloat(),_TEMPdata.value.size.toFloat().toString())
+        }
+
+        // Reset the variables for the next set of data
+        ecg = ""
+        heartrate = ""
+        spo2 = ""
+        temp = ""
+    }
 
 
-        if(inputStringlist[0] == "@" && inputStringlist[1] == "@" && inputStringlist[2] == "@")
+    fun handledata1(data : String)
+    {
+        Toast.makeText(context,data,Toast.LENGTH_LONG).show()
+        Log.i("TAG1",data)
+        var delimiter = listOf('!','#','$','%','*')
+        var values = listOf('1','2','3','4','5','6','7','8','9','0','.','@')
+        for( i in data )
         {
-            Toast.makeText(context,"Place your Finger", Toast.LENGTH_SHORT).show()
+            if(i in delimiter)
+            {
+                pre_delimiter = i.toString()
+                if(i.toString() == "*")
+                {
+                    Toast.makeText(context,"$ecg $heartrate $spo2 $temp",Toast.LENGTH_LONG).show()
+                    Log.i("TAG1","$ecg $heartrate $spo2 $temp")
+                    temp = ""
+                    heartrate = ""
+                    spo2 = ""
+                    temp = ""
+
+                }
+            }
+            else if(i in values)
+            {
+                if(i != '@')
+                {
+                    if(pre_delimiter == "!")
+                    {
+                        ecg += i.toString()
+                    }
+                    if(pre_delimiter == "#")
+                    {
+                        ecg = ""
+                        heartrate += i.toString()
+                    }
+                    if(pre_delimiter == "$")
+                    {
+                        heartrate = ""
+                        spo2 += i.toString()
+                    }
+                    if(pre_delimiter == "%")
+                    {
+                        spo2 = ""
+                        temp += i.toString()
+                    }
+                }
+                else
+                {
+                    if(pre_delimiter == "!")
+                    {
+                        ecg = "null"
+                    }
+                    if(pre_delimiter == "#")
+                    {
+
+                        heartrate = "null"
+                    }
+                    if(pre_delimiter == "$")
+                    {
+
+                        spo2 = "null"
+                    }
+                    if(pre_delimiter == "%")
+                    {
+
+                        temp = "null"
+                    }
+                }
+            }
         }
-        else {
-            if (inputStringlist[0] != "@") {
-                _ECGdata.value += Point(_ECGdata.value.size.toFloat(), inputStringlist[0].toFloat())
-                ecg = inputStringlist[0].toFloat()
-            } else {
-                Toast.makeText(context, "ECG value out of range", Toast.LENGTH_SHORT).show()
-                heartrate = inputStringlist[1].toFloat()
-            }
-            if (inputStringlist[1] != "@") {
-                _HeartRatedata.value += Point(
-                    _HeartRatedata.value.size.toFloat(),
-                    inputStringlist[1].toFloat())
 
-                spo2 = inputStringlist[2].toFloat()
-            } else {
-                Toast.makeText(context, "Heart Rate value out of range", Toast.LENGTH_SHORT).show()
-                temp = inputStringlist[3].toFloat()
-            }
-            if (inputStringlist[2] != "@") {
-                _SPO2data.value += Point(
-                    _SPO2data.value.size.toFloat(),
-                    inputStringlist[2].toFloat()
-                )
-            } else {
-                Toast.makeText(context, "SPO2 value out of range", Toast.LENGTH_SHORT).show()
-            }
-            if (inputStringlist[3] != "@") {
-                _TEMPdata.value += Point(
-                    _TEMPdata.value.size.toFloat(),
-                    inputStringlist[3].toFloat()
-                )
-            } else {
-                Toast.makeText(context, "Temperature value out of range", Toast.LENGTH_SHORT).show()
-            }
 
-//            patientData = PatientData(patientId = patientid , ecg =  ecg , heartRate = heartrate , spo2 = spo2 , temperature = temp)
-
-            dbHandler.addPatientData(patientid,ecg,heartrate,spo2,temp)
-        }
     }
 
     inner class clientclass(var getdevice: BluetoothDevice) : Thread()

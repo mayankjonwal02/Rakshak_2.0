@@ -97,49 +97,69 @@ fun connection(navHostController: NavHostController, context: Context, mybluetoo
                 Text(text = "Scan Devices", fontSize = 20.sp)
                 
             }
-            Card(modifier = Modifier
-                .padding(10.dp)
-                .fillMaxWidth()
-                .height(300.dp),
-                backgroundColor = Color.Blue,
-                shape = RoundedCornerShape(20.dp)
+            if(mylist.size > 0){
+                Card(
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .fillMaxWidth()
+                        .height(300.dp),
+                    backgroundColor = Color.Blue,
+                    shape = RoundedCornerShape(20.dp)
                 )
-            {
-                LazyColumn(modifier = Modifier.padding(20.dp))
                 {
-                    items(mylist)
+                    LazyColumn(modifier = Modifier.padding(20.dp))
                     {
-                        item -> Card(modifier = Modifier
-                        .clickable {
-                            if (item != null) {
-                                try {
+                        items(mylist)
+                        { item ->
+                            Card(modifier = Modifier
+                                .clickable {
+                                    if (item != null) {
+                                        try {
 //                                    sp?.edit()?.putString("bluetoothAddress",item.address)?.apply()
-                                    mybluetooth
-                                        .clientclass(item)
-                                        .start()
-                                } catch (e: IOException) {
-                                    Toast
-                                        .makeText(context, e.message.toString(), Toast.LENGTH_LONG)
-                                        .show()
+                                            mybluetooth
+                                                .clientclass(item)
+                                                .start()
+                                        } catch (e: IOException) {
+                                            Toast
+                                                .makeText(
+                                                    context,
+                                                    e.message.toString(),
+                                                    Toast.LENGTH_LONG
+                                                )
+                                                .show()
+                                        }
+                                    }
+                                }
+                                .padding(10.dp)
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
+                                backgroundColor = Color.White,
+                                contentColor = Color.Blue,
+                                shape = RoundedCornerShape(20.dp)) {
+                                if (ActivityCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.BLUETOOTH_CONNECT
+                                    ) != PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    Toast.makeText(
+                                        context,
+                                        "Permissions not Granted",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                                item?.name?.let {
+                                    Text(
+                                        text = it,
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(5.dp),
+                                        textAlign = TextAlign.Center
+                                    )
                                 }
                             }
                         }
-                        .padding(10.dp)
-                        .fillMaxWidth()
-                        .wrapContentHeight(), backgroundColor = Color.White, contentColor = Color.Blue, shape = RoundedCornerShape(20.dp)) {
-                            if (ActivityCompat.checkSelfPermission(
-                                    context,
-                                    Manifest.permission.BLUETOOTH_CONNECT
-                                ) != PackageManager.PERMISSION_GRANTED
-                            ) {
-                                Toast.makeText(context,"Permissions not Granted",Toast.LENGTH_LONG).show()
-                            }
-                        item?.name?.let {
-                            Text(text = it, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold,modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(5.dp), textAlign = TextAlign.Center)
-                        }
-                    } 
                     }
                 }
             }

@@ -30,7 +30,7 @@ import com.example.rakshak20.android.navigation.screen
 @Composable
 fun splash(navHostController: NavHostController, context: Context) {
 
-    getpermissions()  //    requesting permissions
+    getpermissions(context)  //    requesting permissions
     var iconsize = remember {
         androidx.compose.animation.core.Animatable(0f)
     }

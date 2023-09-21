@@ -69,7 +69,7 @@ class ApiViewmodel(context: Context) : ViewModel()
     suspend fun getconnection(): String{
         try {
             var responce = apiService.connect()
-            return responce.body().toString()
+            return responce.body()?.message.toString()
         }
         catch (e:IOException)
         {

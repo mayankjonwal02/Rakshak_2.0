@@ -1,5 +1,6 @@
 package com.example.rakshak20.android
 
+import LineChartComposable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,6 +16,8 @@ import com.example.rakshak20.android.navigation.screen
 import com.example.rakshak20.android.windows.*
 import demopage3
 import demopage4
+import io.jetchart.line.Point
+import kotlin.random.Random
 
 //import com.example.rakshak20.android.windows.SubmitDataForm
 
@@ -36,6 +39,9 @@ class MainActivity : ComponentActivity() {
 //                    LoginScreen(navHostController = navController, context = context)
 //                    fetchpage()
 //                        demopage4()
+
+                     fun points(count: Int) = (1..count).map { Point(Random.nextFloat(), "Point$it") }
+//                    LineChartComposable(points(10))
                 }
             }
         }
