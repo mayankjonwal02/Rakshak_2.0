@@ -92,10 +92,10 @@ class DBHandler(context: Context?) : SQLiteOpenHelper(context, DB_NAME, null, DB
 
 data class PatientData(
     val dataId: Int,
-    val patientId: String?,
-    val ecg: Float?,
-    val heartRate: Float?,
-    val spo2: Float?,
-    val temperature: Float?,
+    val patientId: String,
+    val ecg: Float,
+    val heartRate: Float,
+    val spo2: Float,
+    val temperature: Float,
     val timestamp: String
 )

@@ -27,10 +27,7 @@ import com.example.rakshak20.android.API.medicaldata
 import com.example.rakshak20.android.functions.getSharedPreferences
 import com.example.rakshak20.android.navigation.navgraph1
 import com.example.rakshak20.android.navigation.screen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.IOException
 
 @Composable
@@ -103,7 +100,7 @@ fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostControl
 //            .padding(10.dp)
 //            .fillMaxWidth()
 ////            .height(10.dp)
-//            .clickable { navcontroller.navigate(screen.connection.route) }
+//            .clickable { navcontroller1.navigate(screen.countdown.route) }
 //
 //            .background(Color.Transparent)
 //            .padding(10.dp)
@@ -112,7 +109,7 @@ fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostControl
 //
 //            Icon(imageVector = Icons.Filled.AutoGraph, contentDescription = "")
 //            Spacer(modifier = androidx.compose.ui.Modifier.width(16.dp))
-//            Text(text = "Visualisation", modifier = androidx.compose.ui.Modifier.weight(1f))
+//            Text(text = "Visualise Again", modifier = androidx.compose.ui.Modifier.weight(1f))
 //
 //        }
         Spacer(modifier = androidx.compose.ui.Modifier.height(6.dp))
@@ -124,53 +121,61 @@ fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostControl
 //            .height(10.dp)
             .clickable {
                 CoroutineScope(Dispatchers.IO).launch {
-                    var response = apiViewmodel.getconnection()
-                    withContext(Dispatchers.Main) {
-                        Toast
-                            .makeText(context, response, Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                    if (response.equals("Connection Successful")) {
-                        var data = dbHandler.getAllPatientData()
+                    try {
+                        val connectionResponse = apiViewmodel.getconnection()
 
-                        CoroutineScope(Dispatchers.Main).launch {
-                            for (i in data) {
-                                try {
-
-                                    var response = apiViewmodel.senddataByAPI(
-                                        medicaldata(
-                                            patientid = i.patientId,
-                                            spo2 = i.spo2,
-                                            heartrate = i.heartRate,
-                                            ecg = i.ecg,
-                                            temperature = i.temperature,
-                                            timestamp = i.timestamp
-                                        )
-                                    )
-
-                                } catch (e: IOException) {
-                                    withContext(Dispatchers.Main) {
-                                        Toast
-                                            .makeText(
-                                                context,
-                                                e.message.toString(),
-                                                Toast.LENGTH_SHORT
-                                            )
-                                            .show()
-                                    }
-                                    Log.e("TAG1", e.message.toString())
-                                }
-                            }
-                            dbHandler.deleteAllPatientData()
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
+                       GlobalScope.launch(Dispatchers.Main){
                             Toast
-                                .makeText(context, "Connection Failed", Toast.LENGTH_SHORT)
+                                .makeText(context, connectionResponse, Toast.LENGTH_SHORT)
                                 .show()
                         }
+
+                        if (connectionResponse == "Connection Successful") {
+                            val data = dbHandler.getAllPatientData()
+
+
+                            CoroutineScope(Dispatchers.IO).launch{
+                                for (i in data) {
+                                    try {
+                                        val response = apiViewmodel.senddataByAPI(
+                                            medicaldata(
+                                                patientid = i.patientId,
+                                                spo2 = i.spo2,
+                                                heartrate = i.heartRate,
+                                                ecg = i.ecg,
+                                                temperature = i.temperature,
+                                                timestamp = i.timestamp
+                                            )
+                                        )
+                                        // Handle response if needed
+                                    } catch (e: IOException) {
+                                        GlobalScope.launch(Dispatchers.Main) {
+                                            Toast
+                                                .makeText(
+                                                    context,
+                                                    e.message.toString(),
+                                                    Toast.LENGTH_SHORT
+                                                )
+                                                .show()
+                                        }
+                                        Log.e("TAG1", e.message.toString())
+                                    }
+                                }
+                                dbHandler.deleteAllPatientData()
+                            }
+                        } else {
+                            withContext(Dispatchers.Main) {
+                                Toast
+                                    .makeText(context, "Connection Failed", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // Handle exceptions appropriately
+                        Log.e("TAG", "Exception: ${e.message}", e)
                     }
                 }
+
 
             }
 
@@ -180,7 +185,7 @@ fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostControl
 
         Icon(imageVector = Icons.Filled.Share, contentDescription = "")
         Spacer(modifier = androidx.compose.ui.Modifier.width(16.dp))
-        Text(text = "Share Data", modifier = androidx.compose.ui.Modifier.weight(1f))
+        Text(text = "Sync Data", modifier = androidx.compose.ui.Modifier.weight(1f))
 
     }
     Spacer(modifier = androidx.compose.ui.Modifier.height(6.dp))

@@ -73,12 +73,12 @@ fun LineChartComposable(myBluetooth: MyBluetooth , type : String) {
 //                Text(text = type.toString().toUpperCase(), color = Black, fontStyle = FontStyle.Normal, fontSize = 30.sp, fontWeight = FontWeight.ExtraBold, fontFamily = FontFamily.Default)
             Spacer(modifier = Modifier.height(20.dp))
 
-            var data20 = data.takeLast(20)
+//            var data20 = data.takeLast(20)
 //            var datalast = data20.last()
             LineChart(
                 lines = listOf(
                     Line(
-                        points = data20,
+                        points = data,
                         lineDrawer = SolidLineDrawer(thickness = 8.dp, color = Blue)
                     ),
                 ),
@@ -98,7 +98,7 @@ fun LineChartComposable(myBluetooth: MyBluetooth , type : String) {
         }
         else
         {
-            Text(text = "Calculating $type values......", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().background(
+            Text(text = "No Data to show....", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().background(
                 Transparent), color = Blue)
         }
     }

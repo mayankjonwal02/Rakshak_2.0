@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.rakshak20.android.functions.MyBluetooth
 import com.example.rakshak20.android.windows.*
+import countdownTimer
 
 //  coe for navigation
 
@@ -81,9 +82,11 @@ fun navgraph1(
 
         }
 
-        composable(screen.splash.route)  // splash screen
+
+
+        composable(screen.countdown.route)
         {
-            splash(navHostController,context)
+            countdownTimer(countdownDuration = 60, navHostController , context , bluetooth )
         }
 
 

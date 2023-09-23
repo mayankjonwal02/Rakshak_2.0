@@ -177,7 +177,7 @@ fun connection(navHostController: NavHostController, context: Context, mybluetoo
             if(status == "Connected"){
 
                 OutlinedButton(
-                    onClick = { navHostController.navigate(screen.visualise.route) },
+                    onClick = { navHostController.navigate(screen.countdown.route) },
                     colors = ButtonDefaults.outlinedButtonColors(
                         backgroundColor = Color.Blue,
                         contentColor = Color.White

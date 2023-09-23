@@ -18,6 +18,7 @@ android {
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
+//        compileSdkPreview = "UpsideDownCake"
     }
     buildFeatures {
         compose = true
@@ -90,7 +91,9 @@ dependencies {
     api ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5")
 
     implementation ("com.github.fracassi-marco:JetChart:1.3.7")
-//    implementation ("com.google.accompanist:accompanist-chart:0.16.1" )// Replace x.y.z with the latest version
+
+
+
 
 
 }

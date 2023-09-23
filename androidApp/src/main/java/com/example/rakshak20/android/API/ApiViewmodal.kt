@@ -97,28 +97,42 @@ class ApiViewmodel(context: Context) : ViewModel()
 
 
     suspend fun senddataByAPI(medicaldata: medicaldata): String {
-        var responce = apiService.sharedata(medicaldata)
-
         try {
-            if(responce.body().isNotNull()) {
+            val response = apiService.sharedata(
+               medicaldata
+            )
 
-                return responce.body()?.message.toString()
-            }
-            else
-            {
-                return "ERROR IN SENDING DATA"
-            }
-        }
-        catch (e:IOException)
-        {
-            Log.e("TAG1",e.message.toString())
-            return e.message.toString()
+            return response.string().toString()
+        } catch (e: IOException) {
+            Log.e("TAG1", e.message.toString())
+            return "IOException: ${e.message}"
+        } catch (e: Exception) {
+            Log.e("TAG1", e.message.toString())
+            return "Error: ${e.message}"
         }
     }
+
+
+
 
     suspend fun getdata(patientId: String): String {
         try{ var response = apiService.getdata(patientId)
         return response.body().toString()
+        }
+        catch (e:Exception)
+        {
+            return e.message.toString()
+        }
+
+    }
+
+
+    suspend fun send(patientdata: medicaldata) : String
+    {
+        try {
+
+            var responce = apiService.senddata(patientdata.patientid,patientdata.timestamp,patientdata.heartrate,patientdata.ecg,patientdata.spo2,patientdata.temperature)
+            return responce.string()
         }
         catch (e:Exception)
         {

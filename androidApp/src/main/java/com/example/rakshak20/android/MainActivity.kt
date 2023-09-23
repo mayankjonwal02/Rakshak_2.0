@@ -1,6 +1,7 @@
 package com.example.rakshak20.android
 
-import LineChartComposable
+
+import MedicalDataForm
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,10 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.example.rakshak20.android.API.ApiViewmodel
 import com.example.rakshak20.android.navigation.navgraph
+import com.example.rakshak20.android.navigation.navgraph1
 import com.example.rakshak20.android.navigation.screen
 import com.example.rakshak20.android.windows.*
-import demopage3
+import countdownTimer
 import demopage4
 import io.jetchart.line.Point
 import kotlin.random.Random
@@ -34,12 +37,9 @@ class MainActivity : ComponentActivity() {
                     var context = LocalContext.current
 //
                     navgraph( navHostController = navController, context = context, start = screen.splash.route)
-//                        SubmitDataForm()
-//                    RegistrationScreen(navHostController = navController, context = context)
-//                    LoginScreen(navHostController = navController, context = context)
-//                    fetchpage()
-//                        demopage4()
-
+//demopage4()
+//                    var apiViewmodel = ApiViewmodel(context)
+//                    MedicalDataForm(context = context,apiViewModel = apiViewmodel )
                      fun points(count: Int) = (1..count).map { Point(Random.nextFloat(), "Point$it") }
 //                    LineChartComposable(points(10))
                 }
