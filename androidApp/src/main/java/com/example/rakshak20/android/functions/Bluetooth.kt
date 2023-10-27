@@ -3,6 +3,7 @@ package com.example.rakshak20.android.functions
 import DBHandler
 import PatientData
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -12,10 +13,13 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Handler
+import android.os.Looper
 import android.os.Message
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
@@ -24,8 +28,10 @@ import io.jetchart.line.Point
 import com.example.rakshak20.android.constantvariables.uuid
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.io.InputStream
@@ -43,6 +49,13 @@ class MyBluetooth() : ViewModel() {
     lateinit var receive: MyBluetooth.receivedata
 
     var patientid: String? = null
+
+    var socket: BluetoothSocket? = null
+    lateinit var device: BluetoothDevice
+
+
+    @Volatile
+    var getmessage: Boolean = false
 
 
     val _navigated = MutableStateFlow<Int>(0)
@@ -107,17 +120,18 @@ class MyBluetooth() : ViewModel() {
         _navigated.value = 0
     }
 
+    @SuppressLint("MissingPermission")
     fun fetchPairedDevices() {
         if (bluetoothAdapter.isNotNull()) {
 
-            if (ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.BLUETOOTH_CONNECT
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                Toast.makeText(context, "Permissions not Granted", Toast.LENGTH_LONG).show()
-                return
-            }
+//            if (ActivityCompat.checkSelfPermission(
+//                    context,
+//                    Manifest.permission.BLUETOOTH_CONNECT
+//                ) != PackageManager.PERMISSION_GRANTED
+//            ) {
+//                Toast.makeText(context, "Permissions not Granted", Toast.LENGTH_LONG).show()
+//                return
+//            }
             _paireddevices.value = bluetoothAdapter.bondedDevices.toList()
         }
     }
@@ -144,7 +158,12 @@ class MyBluetooth() : ViewModel() {
                 val readbuff = msg.obj as ByteArray
                 var data = String(readbuff, 0, msg.arg1, Charsets.UTF_8)
 
-                handledata(data)
+                if(data.isNotEmpty() || data.isNotBlank()){
+                    handledata(data)
+                }
+                else {
+                    Toast.makeText(context, "Data not received", Toast.LENGTH_SHORT).show()
+                }
                 false
             }
 
@@ -213,28 +232,28 @@ class MyBluetooth() : ViewModel() {
             temperature = temp.toString().toFloat()
         )
 
-        if (ecg != "0") {
+        if (ecg != "0" || ecg != "" ) {
             _ECGdata.value =
                 _ECGdata.value + Point(
                     ecg.toString().toFloat(),
                     _ECGdata.value.size.toFloat().toString()
                 )
         }
-        if (heartrate != "0") {
+        if (heartrate != "0" || heartrate != "") {
             _HeartRatedata.value = _HeartRatedata.value + Point(
 
                 heartrate.toString().toFloat(),
                 _HeartRatedata.value.size.toFloat().toString(),
             )
         }
-        if (spo2 != "0") {
+        if (spo2 != "0" || spo2 != "") {
             _SPO2data.value =
                 _SPO2data.value + Point(
                     spo2.toString().toFloat(),
                     _SPO2data.value.size.toFloat().toString()
                 )
         }
-        if (temp != "0") {
+        if (temp != "0" || temp != "") {
             _TEMPdata.value =
                 _TEMPdata.value + Point(
                     temp.toString().toFloat(),
@@ -308,34 +327,41 @@ class MyBluetooth() : ViewModel() {
     }
 
     inner class clientclass(var getdevice: BluetoothDevice) : Thread() {
-        private lateinit var socket: BluetoothSocket
-        private lateinit var device: BluetoothDevice
+//        private lateinit var socket: BluetoothSocket
+//        private lateinit var device: BluetoothDevice
+
 
         init {
             client(getdevice)
+
         }
 
+        @SuppressLint("MissingPermission")
         fun client(getdevice: BluetoothDevice) {
 
-            this.device = getdevice
+            device = getdevice
             connecteddevice = getdevice
             try {
-                var remotedevice = bluetoothAdapter.getRemoteDevice(this.device.address)
-                if (ActivityCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.BLUETOOTH_CONNECT
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    Toast.makeText(context, "Permissions not Granted", Toast.LENGTH_LONG).show()
-                    return
-                }
-                this.socket = remotedevice.createInsecureRfcommSocketToServiceRecord(uuid)
+                var remotedevice = bluetoothAdapter.getRemoteDevice(device.address)
+//                if (ActivityCompat.checkSelfPermission(
+//                        context,
+//                        Manifest.permission.BLUETOOTH_CONNECT
+//                    ) != PackageManager.PERMISSION_GRANTED
+//                ) {
+//                    Handler(Looper.getMainLooper()).post {
+//                        Toast.makeText(context, "Permissions not Granted", Toast.LENGTH_LONG).show()
+//                    }
+//                    return
+//                }
+                socket = remotedevice.createInsecureRfcommSocketToServiceRecord(uuid)
+
             } catch (e: IOException) {
                 e.printStackTrace()
             }
         }
 
 
+        @SuppressLint("MissingPermission")
         override fun run() {
             super.run()
             var message1 = Message.obtain()
@@ -343,25 +369,30 @@ class MyBluetooth() : ViewModel() {
             handler.sendMessage(message1)
             try {
 
-                if (ActivityCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.BLUETOOTH_CONNECT
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    Toast.makeText(context, "Permissions not Granted", Toast.LENGTH_LONG).show()
-                    return
-                }
-                socket.connect()
+//                if (ActivityCompat.checkSelfPermission(
+//                        context,
+//                        Manifest.permission.BLUETOOTH_CONNECT
+//                    ) != PackageManager.PERMISSION_GRANTED
+//                ) {
+//                    Toast.makeText(context, "Permissions not Granted", Toast.LENGTH_LONG).show()Handler(Looper.getMainLooper()).post {
+//                        Toast.makeText(context, "Permissions not Granted", Toast.LENGTH_LONG).show()
+//                    }
+//                    return
+//                }
+                socket?.connect()
 
                 var message = Message.obtain()
                 message.what = STATE_CONNECTED
                 handler.sendMessage(message)
                 (context as? Activity)?.runOnUiThread() {
-                    Toast.makeText(context, "Connected to ${device.name}", Toast.LENGTH_LONG)
-                        .show()
+                    // Show a Toast on the main/UI thread
+                    Handler(Looper.getMainLooper()).post {
+                        Toast.makeText(context, "Connected to ${device.name}", Toast.LENGTH_LONG).show()
+                    }
                 }
 
-                receive = receivedata(socket)
+                receive = receivedata(socket!!)
+//                receive.startThread()
 //                receive.start()
 
 
@@ -374,7 +405,7 @@ class MyBluetooth() : ViewModel() {
         }
     }
 
-    inner class receivedata(socket: BluetoothSocket) : Thread() {
+    inner class receivedata(socket: BluetoothSocket)  {
         private val bluetoothSocket: BluetoothSocket = socket
         private lateinit var inputStream: InputStream
         private lateinit var outputStream: OutputStream
@@ -399,22 +430,45 @@ class MyBluetooth() : ViewModel() {
             outputStream = tempOut ?: return
         }
 
-        override fun run() {
-            super.run()
-
+        fun getBLEvalue()
+        {
             var buffer = ByteArray(1024)
             var bytes: Int
-
-            while (isRunning) { // Check the flag to determine if the thread should continue
-                try {
-                    bytes = inputStream.read(buffer)
-                    handler.obtainMessage(STATE_MESSAGE_RECEIVED, bytes, -1, buffer).sendToTarget()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    isRunning = false // Stop the thread on IO exception
-                }
+            Log.e("TAG1",isRunning.toString())
+            try {
+                bytes = inputStream.read(buffer)
+                handler.obtainMessage(STATE_MESSAGE_RECEIVED, bytes, -1, buffer)
+                    .sendToTarget()
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Toast.makeText(context, "Error parsing data", Toast.LENGTH_SHORT).show()
+//                        isRunning = false // Stop the thread on IO exception
             }
+
         }
+
+//        override fun run() {
+//            super.run()
+//
+//            var buffer = ByteArray(1024)
+//            var bytes: Int
+//
+//
+//            while (true) { // Check the flag to determine if the thread should continue
+//                Log.e("TAG1",isRunning.toString())
+//
+//                if(isRunning){
+//                    try {
+//                        bytes = inputStream.read(buffer)
+//                        handler.obtainMessage(STATE_MESSAGE_RECEIVED, bytes, -1, buffer)
+//                            .sendToTarget()
+//                    } catch (e: IOException) {
+//                        e.printStackTrace()
+////                        isRunning = false // Stop the thread on IO exception
+//                    }
+//                }
+//            }
+//        }
         fun startThread()
         {
             isRunning = true

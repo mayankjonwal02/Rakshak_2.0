@@ -27,7 +27,7 @@ fun generateRandomData(): List<co.yml.charts.common.model.Point> {
 
     for (i in 1..10) {
         val randomDouble = random.nextDouble(0.0, 1.0)*10
-            data.add(co.yml.charts.common.model.Point(i.toFloat(), randomDouble.toFloat()))
+        data.add(co.yml.charts.common.model.Point(i.toFloat(), randomDouble.toFloat()))
     }
 
 

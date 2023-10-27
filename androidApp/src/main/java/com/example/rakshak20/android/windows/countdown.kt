@@ -40,18 +40,26 @@ fun countdownTimer(
             val timer = object : CountDownTimer((countdownDuration * 1000).toLong(), 1000) {
                 override fun onTick(millisUntilFinished: Long) {
                     timeRemaining = (millisUntilFinished / 1000).toInt()
+                    bluetooth.receive.getBLEvalue()
                 }
 
                 override fun onFinish() {
                     timeRemaining = 0
+//                    bluetooth.receive.stopThread()
                 }
             }
-            bluetooth.receive.startThread()
-            bluetooth.receive.start()
+//            bluetooth.receive.startThread()
+//            bluetooth.receive.start()
+//            bluetooth.getmessage = true
+
+
 
             timer.start()
             onDispose {
                 timer.cancel()
+//                bluetooth.receive.interrupt()
+//                bluetooth.getmessage = false
+//                bluetooth.receive.stopThread()
             }
         }
     }
@@ -68,7 +76,9 @@ fun countdownTimer(
     ) {
         if(flag == 0)
         {
-            OutlinedButton(onClick = { flag = 1}, border = BorderStroke(3.dp,Color.Blue),colors = ButtonDefaults.outlinedButtonColors(backgroundColor = Color.Transparent, contentColor = Color.Blue,)) {
+            OutlinedButton(onClick = {
+                bluetooth.receive.startThread()
+                flag = 1}, border = BorderStroke(3.dp,Color.Blue),colors = ButtonDefaults.outlinedButtonColors(backgroundColor = Color.Transparent, contentColor = Color.Blue,)) {
                 Text(text = "START")
             }
         }
@@ -79,6 +89,7 @@ fun countdownTimer(
                 style = MaterialTheme.typography.h5,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
+            , color = Color.Black
             )
 
             Spacer(modifier = Modifier.height(16.dp))

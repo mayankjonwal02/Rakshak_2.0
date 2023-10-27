@@ -14,7 +14,7 @@ android {
     compileSdk = 34
     defaultConfig {
         applicationId = "com.example.rakshak20.android"
-        minSdk = 31
+        minSdk = 28
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"

@@ -68,39 +68,85 @@ fun LineChartComposable(myBluetooth: MyBluetooth , type : String) {
         .width(600.dp) // Adjust the width here
         .height(300.dp) // Adjust the height here
     Box(modifier = Modifier.height(200.dp), contentAlignment = Alignment.Center) {
-        if (data.size > 5) {
+        if(type == SCREEN1){
+            if (data.size > 5) {
 //            Column(modifier = Modifier.verticalScroll(rememberScrollState()).fillMaxSize()){
 //                Text(text = type.toString().toUpperCase(), color = Black, fontStyle = FontStyle.Normal, fontSize = 30.sp, fontWeight = FontWeight.ExtraBold, fontFamily = FontFamily.Default)
-            Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
 //            var data20 = data.takeLast(20)
 //            var datalast = data20.last()
-            LineChart(
-                lines = listOf(
-                    Line(
-                        points = data,
-                        lineDrawer = SolidLineDrawer(thickness = 8.dp, color = Blue)
+                LineChart(
+                    lines = listOf(
+                        Line(
+                            points = data,
+                            lineDrawer = SolidLineDrawer(thickness = 8.dp, color = Blue)
+                        ),
                     ),
-                ),
-                modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
-                    .width(400.dp)
-                    .height(400.dp),
+                    modifier = Modifier
+                        .horizontalScroll(rememberScrollState())
+                        .width(400.dp)
+                        .height(400.dp),
 
-                animation = fadeInAnimation(3000),
-                pointDrawer = FilledPointDrawer(),
-                xAxisDrawer = LineXAxisDrawer(),
-                yAxisDrawer = LineYAxisWithValueDrawer(),
-                horizontalOffsetPercentage = 1f,
-                lineShader = GradientLineShader(listOf(Blue, Transparent))
-            )
+                    animation = fadeInAnimation(3000),
+                    pointDrawer = FilledPointDrawer(),
+
+                    xAxisDrawer = LineXAxisDrawer(),
+                    yAxisDrawer = LineYAxisWithValueDrawer(),
+                    horizontalOffsetPercentage = 1f,
+                    lineShader = GradientLineShader(listOf(Blue, Transparent))
+                )
 //            }
+            } else {
+                Text(
+                    text = "No Data to show....",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            Transparent
+                        ),
+                    color = Blue
+                )
+            }
         }
         else
         {
-            Text(text = "No Data to show....", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().background(
-                Transparent), color = Blue)
+            if(data.size > 0)
+            {
+                var values = data.toList().map { it.value.toDouble() }
+                var avgvalue = values.sum()/values.size
+                Text(
+                    text = "Average $type : " + avgvalue.toString(),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            Transparent
+                        ),
+                    color = Blue,
+
+                    fontFamily = FontFamily.Default,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 20.sp,
+                    fontStyle = FontStyle.Normal
+                )
+            }
+            else
+            {
+                Text(
+                    text = "No Data to show....",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            Transparent
+                        ),
+                    color = Blue
+                )
+            }
         }
+
     }
 }
 

@@ -35,6 +35,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     var navController = rememberNavController()
                     var context = LocalContext.current
+
 //
                     navgraph( navHostController = navController, context = context, start = screen.splash.route)
 //demopage4()

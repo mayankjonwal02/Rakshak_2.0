@@ -13,7 +13,7 @@
     <application
         android:allowBackup="false"
         android:supportsRtl="true"
-        android:label="Rakshak"
+        android:label="Rakshak 3.0"
         android:icon="@drawable/hello"
 
         android:theme="@style/AppTheme">

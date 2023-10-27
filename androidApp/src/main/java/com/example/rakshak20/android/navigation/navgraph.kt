@@ -11,10 +11,14 @@ import com.example.rakshak20.android.functions.MyBluetooth
 import com.example.rakshak20.android.windows.*
 import countdownTimer
 
+//
 //  coe for navigation
+var bluetooth : MyBluetooth? = null
 
 @Composable
+
 fun navgraph(
+
 
     navHostController: NavHostController,
     context: Context,
@@ -64,21 +68,21 @@ fun navgraph1(
     context: Context,
     start: String) {
 
-    val bluetooth : MyBluetooth = viewModel()
-    bluetooth.initialize(context)
+    bluetooth = MyBluetooth()
+    bluetooth!!.initialize(context)
     NavHost(navController = navHostController, startDestination = start)
     {
 
 
         composable(screen.visualise.route) // visualisation screen
         {
-            visualisation(context,bluetooth)
+            visualisation(context, bluetooth!!)
         }
         composable(screen.connection.route)
         {
 
 
-            connection(navHostController,context,bluetooth)
+            connection(navHostController,context, bluetooth!!)
 
         }
 
@@ -86,7 +90,7 @@ fun navgraph1(
 
         composable(screen.countdown.route)
         {
-            countdownTimer(countdownDuration = 60, navHostController , context , bluetooth )
+            countdownTimer(countdownDuration = 60, navHostController , context , bluetooth!!)
         }
 
 

@@ -51,7 +51,13 @@ fun ipscreen(context: Context, navHostController: NavHostController) {
                     onValueChange = { ipaddress = it },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Color.Green,
-                        textColor = Color.Black
+                        textColor = Color.Black,
+                        focusedLabelColor = Color.Green,
+                        unfocusedLabelColor = Color.Gray,
+                        unfocusedBorderColor = Color.Gray,
+                        backgroundColor = Color.White,
+                        cursorColor = Color.Black,
+                        placeholderColor = Color.LightGray
                     ),
                     label = { Text(text = "IP Address") },
                     placeholder = { Text(text = "Enter IP Address") }
@@ -75,7 +81,7 @@ fun ipscreen(context: Context, navHostController: NavHostController) {
                 Text(text = "Connect" , color = Color.White)
             }
             Spacer(modifier = Modifier.height(70.dp))
-            Text(text = status)
+            Text(text = status,color = Color.Black)
             Spacer(modifier = Modifier.height(90.dp))
 
         } }

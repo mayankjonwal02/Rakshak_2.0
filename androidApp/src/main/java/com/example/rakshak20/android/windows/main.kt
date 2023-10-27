@@ -25,6 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.rakshak20.android.API.ApiViewmodel
 import com.example.rakshak20.android.API.medicaldata
 import com.example.rakshak20.android.functions.getSharedPreferences
+import com.example.rakshak20.android.navigation.bluetooth
 import com.example.rakshak20.android.navigation.navgraph1
 import com.example.rakshak20.android.navigation.screen
 import kotlinx.coroutines.*
@@ -120,21 +121,23 @@ fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostControl
             .fillMaxWidth()
 //            .height(10.dp)
             .clickable {
-                CoroutineScope(Dispatchers.IO).launch {
+                var job1 = CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val connectionResponse = apiViewmodel.getconnection()
 
-                       GlobalScope.launch(Dispatchers.Main){
+                       var job4 = GlobalScope.launch(Dispatchers.Main){
                             Toast
                                 .makeText(context, connectionResponse, Toast.LENGTH_SHORT)
                                 .show()
                         }
 
+                        job4.join()
+
                         if (connectionResponse == "Connection Successful") {
                             val data = dbHandler.getAllPatientData()
 
 
-                            CoroutineScope(Dispatchers.IO).launch{
+                            var job2 = CoroutineScope(Dispatchers.IO).launch{
                                 for (i in data) {
                                     try {
                                         val response = apiViewmodel.senddataByAPI(
@@ -149,7 +152,7 @@ fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostControl
                                         )
                                         // Handle response if needed
                                     } catch (e: IOException) {
-                                        GlobalScope.launch(Dispatchers.Main) {
+                                        var job3 = GlobalScope.launch(Dispatchers.Main) {
                                             Toast
                                                 .makeText(
                                                     context,
@@ -158,23 +161,29 @@ fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostControl
                                                 )
                                                 .show()
                                         }
+                                        job3.join()
                                         Log.e("TAG1", e.message.toString())
                                     }
                                 }
                                 dbHandler.deleteAllPatientData()
                             }
+                            job2.join()
                         } else {
-                            withContext(Dispatchers.Main) {
+                             withContext(Dispatchers.Main) {
                                 Toast
                                     .makeText(context, "Connection Failed", Toast.LENGTH_SHORT)
                                     .show()
                             }
+
+
                         }
                     } catch (e: Exception) {
                         // Handle exceptions appropriately
                         Log.e("TAG", "Exception: ${e.message}", e)
                     }
                 }
+
+
 
 
             }
@@ -185,7 +194,7 @@ fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostControl
 
         Icon(imageVector = Icons.Filled.Share, contentDescription = "")
         Spacer(modifier = androidx.compose.ui.Modifier.width(16.dp))
-        Text(text = "Sync Data", modifier = androidx.compose.ui.Modifier.weight(1f))
+        Text(text = "Sync Data", modifier = androidx.compose.ui.Modifier.weight(1f), color = Color.Black)
 
     }
     Spacer(modifier = androidx.compose.ui.Modifier.height(6.dp))
@@ -204,6 +213,9 @@ fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostControl
                     ?.edit()
                     ?.putString("password", "")
                     ?.apply()
+
+                bluetooth?.socket?.close()
+
                 navcontroller.navigate(screen.ipscreen.route)
 
 
@@ -215,7 +227,7 @@ fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostControl
 
         Icon(imageVector = Icons.Filled.Logout, contentDescription = "")
         Spacer(modifier = androidx.compose.ui.Modifier.width(16.dp))
-        Text(text = "Logout", modifier = androidx.compose.ui.Modifier.weight(1f))
+        Text(text = "Logout", modifier = androidx.compose.ui.Modifier.weight(1f), color = Color.Black)
 
     }
     Spacer(modifier = androidx.compose.ui.Modifier.height(6.dp))

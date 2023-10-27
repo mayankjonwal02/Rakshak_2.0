@@ -2,14 +2,11 @@ package com.example.rakshak20.android.windows
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -18,6 +15,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusState
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -81,7 +80,7 @@ fun LoginScreen(navHostController: NavHostController, context: Context) {
                        singleLine = true,
                        keyboardOptions = KeyboardOptions.Default.copy(
                            keyboardType = KeyboardType.Text
-                       ), colors = TextFieldDefaults.outlinedTextFieldColors(backgroundColor = Color.White, textColor = Color.Blue, focusedLabelColor = Color.Blue, focusedBorderColor = Color.Blue, cursorColor = Color.Blue),
+                       ), colors = TextFieldDefaults.outlinedTextFieldColors(unfocusedBorderColor = Color.Gray, unfocusedLabelColor = Color.Gray,backgroundColor = Color.White, textColor = Color.Blue, focusedLabelColor = Color.Blue, focusedBorderColor = Color.Blue, cursorColor = Color.Blue),
                        modifier = Modifier
                            .fillMaxWidth()
                            .padding(vertical = 8.dp)
@@ -114,7 +113,7 @@ fun LoginScreen(navHostController: NavHostController, context: Context) {
                            onDone = {
                                // Handle login
                            }
-                       ), colors = TextFieldDefaults.outlinedTextFieldColors(backgroundColor = Color.White, textColor = Color.Blue, focusedLabelColor = Color.Blue, focusedBorderColor = Color.Blue, cursorColor = Color.Blue),
+                       ), colors = TextFieldDefaults.outlinedTextFieldColors(unfocusedBorderColor = Color.Gray, unfocusedLabelColor = Color.Gray,backgroundColor = Color.White, textColor = Color.Blue, focusedLabelColor = Color.Blue, focusedBorderColor = Color.Blue, cursorColor = Color.Blue),
                        modifier = Modifier
                            .fillMaxWidth()
                            .padding(vertical = 8.dp)
@@ -159,7 +158,11 @@ fun LoginScreen(navHostController: NavHostController, context: Context) {
                ) {
                    Text(text = "Login")
                }
-               Text(text = "Not Registered Yet ? Sign Up", modifier = Modifier.clickable{navHostController.navigate(screen.registration.route)})
+               OutlinedButton(onClick = {navHostController.navigate(screen.registration.route )}, border = BorderStroke(3.dp, Color.Blue),colors = ButtonDefaults.outlinedButtonColors(backgroundColor = Color.White, contentColor = Color.Blue)) {
+                   Text(text = "Not Registered Yet ? Sign Up")
+               }
+
+//               Text(text = "Not Registered Yet ? Sign Up", modifier = Modifier.clickable{navHostController.navigate(screen.registration.route)})
 
            }
         }
@@ -234,7 +237,7 @@ fun RegistrationScreen(navHostController: NavHostController, context: Context) {
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Text
                     ),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                    colors = TextFieldDefaults.outlinedTextFieldColors(unfocusedBorderColor = Color.Gray, unfocusedLabelColor = Color.Gray,
                         backgroundColor = Color.White,
                         textColor = Color.Blue,
                         focusedLabelColor = Color.Blue,
@@ -254,7 +257,7 @@ fun RegistrationScreen(navHostController: NavHostController, context: Context) {
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Text
                     ),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                    colors = TextFieldDefaults.outlinedTextFieldColors(unfocusedBorderColor = Color.Gray, unfocusedLabelColor = Color.Gray,
                         backgroundColor = Color.White,
                         textColor = Color.Blue,
                         focusedLabelColor = Color.Blue,
@@ -274,7 +277,7 @@ fun RegistrationScreen(navHostController: NavHostController, context: Context) {
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number
                     ),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                    colors = TextFieldDefaults.outlinedTextFieldColors(unfocusedBorderColor = Color.Gray, unfocusedLabelColor = Color.Gray,
                         backgroundColor = Color.White,
                         textColor = Color.Blue,
                         focusedLabelColor = Color.Blue,
@@ -285,26 +288,52 @@ fun RegistrationScreen(navHostController: NavHostController, context: Context) {
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                 )
-                OutlinedTextField(
-                    value = gender,
-                    onValueChange = { gender = it },
-                    label = { Text("Gender") },
-                    singleLine = true,
+                var showdropdown by remember {
+                    mutableStateOf(false)
+                }
+                Column(){
 
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Text
-                    ),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        backgroundColor = Color.White,
-                        textColor = Color.Blue,
-                        focusedLabelColor = Color.Blue,
-                        focusedBorderColor = Color.Blue,
-                        cursorColor = Color.Blue
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                )
+                    OutlinedTextField(
+                        value = gender,
+                        onValueChange = { gender = it },
+                        label = { Text("Gender") },
+                        singleLine = true,
+
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Text
+                        ),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(unfocusedBorderColor = Color.Gray, unfocusedLabelColor = Color.Gray,
+                            backgroundColor = Color.White,
+                            textColor = Color.Blue,
+                            focusedLabelColor = Color.Blue,
+                            focusedBorderColor = Color.Blue,
+                            cursorColor = Color.Blue
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .onFocusChanged { isfocused ->
+                                // Update the isFocused variable
+                                if (isfocused.isFocused) {
+                                    showdropdown = true
+                                } else {
+                                    showdropdown = false
+                                }
+                            }
+                    )
+                    DropdownMenu(expanded = showdropdown, onDismissRequest = { showdropdown = false }) {
+                        var gen = listOf("Male", "Female", "Others")
+                        for (i in gen)
+                        {
+                            DropdownMenuItem(onClick = {
+                                gender = i
+                                showdropdown = false
+                            }) {
+                                Text(text = i)
+                            }
+                        }
+                    }
+                }
                 OutlinedTextField(
                     value = height,
                     onValueChange = { height = it },
@@ -314,7 +343,7 @@ fun RegistrationScreen(navHostController: NavHostController, context: Context) {
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number
                     ),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                    colors = TextFieldDefaults.outlinedTextFieldColors(unfocusedBorderColor = Color.Gray, unfocusedLabelColor = Color.Gray,
                         backgroundColor = Color.White,
                         textColor = Color.Blue,
                         focusedLabelColor = Color.Blue,
@@ -334,7 +363,7 @@ fun RegistrationScreen(navHostController: NavHostController, context: Context) {
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number
                     ),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                    colors = TextFieldDefaults.outlinedTextFieldColors(unfocusedBorderColor = Color.Gray, unfocusedLabelColor = Color.Gray,
                         backgroundColor = Color.White,
                         textColor = Color.Blue,
                         focusedLabelColor = Color.Blue,
@@ -369,7 +398,7 @@ fun RegistrationScreen(navHostController: NavHostController, context: Context) {
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Password
                     ),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                    colors = TextFieldDefaults.outlinedTextFieldColors(unfocusedBorderColor = Color.Gray, unfocusedLabelColor = Color.Gray,
                         backgroundColor = Color.White,
                         textColor = Color.Blue,
                         focusedLabelColor = Color.Blue,
@@ -406,7 +435,7 @@ fun RegistrationScreen(navHostController: NavHostController, context: Context) {
                             // Handle login
                         }
                     ),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                    colors = TextFieldDefaults.outlinedTextFieldColors(unfocusedBorderColor = Color.Gray, unfocusedLabelColor = Color.Gray,
                         backgroundColor = Color.White,
                         textColor = Color.Blue,
                         focusedLabelColor = Color.Blue,
@@ -422,7 +451,8 @@ fun RegistrationScreen(navHostController: NavHostController, context: Context) {
 
                         if(patientId.isNotBlank() && name.isNotBlank() && age.isNotBlank() && gender.isNotBlank() && height.isNotBlank() && weight.isNotBlank() && password.isNotBlank())
                         {
-                            if(gender.toLowerCase() in listOf("male","female") && age.toInt() in 0..150  ){
+                            if(gender.toLowerCase() in listOf("male","female","others") && age.toInt() in 0..100 && weight.toInt()
+                                    .toFloat() in 0.0..110.0  ){
                                 if(password.length >= 6){
                                     CoroutineScope(Dispatchers.Main).launch {
                                         try {
@@ -489,9 +519,12 @@ fun RegistrationScreen(navHostController: NavHostController, context: Context) {
                 ) {
                     Text(text = "Register")
                 }
-                Text(
-                    text = "Already Registered ? Sign In",
-                    modifier = Modifier.clickable { navHostController.navigate(screen.login.route) })
+//                Text(
+//                    text = "Already Registered ? Sign In",
+//                    modifier = Modifier.clickable { navHostController.navigate(screen.login.route) })
+                OutlinedButton(onClick = { navHostController.navigate(screen.login.route)}, border = BorderStroke(3.dp, Color.Blue),colors = ButtonDefaults.outlinedButtonColors(backgroundColor = Color.White, contentColor = Color.Blue)) {
+                    Text(text = "Already Registered ? Sign In")
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.example.rakshak20.android.windows
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -42,6 +43,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.io.IOException
 
+var currentActivity = null
+@SuppressLint("MissingPermission")
 @Composable
 fun connection(navHostController: NavHostController, context: Context, mybluetooth: MyBluetooth) {
 
@@ -50,23 +53,11 @@ fun connection(navHostController: NavHostController, context: Context, mybluetoo
     var sp = remember{
         getSharedPreferences(context)
     }
-//    mybluetooth.connect()
-//    try
-//    {
-//        if (mybluetooth.bluetoothAdapter.isEnabled) {
-//            deviceAddress = sp?.getString("bluetoothAddress","").toString()
-//            if(deviceAddress != "")
-//            {
-//                var device = mybluetooth.bluetoothAdapter.getRemoteDevice(deviceAddress)
-//                mybluetooth.clientclass(device).start()
-//            }
-//
-//        }
-//    }
-//    catch (e:IOException)
-//    {
-//        Toast.makeText(context,e.message.toString(),Toast.LENGTH_LONG).show()
-//    }
+    var checkpermissions by remember {
+        mutableStateOf(false)
+    }
+
+
 
     var intentlauncher =  rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult())
     {
@@ -91,7 +82,47 @@ fun connection(navHostController: NavHostController, context: Context, mybluetoo
         Column(modifier = Modifier
             .fillMaxSize()
             .background(Color.White), horizontalAlignment = Alignment.CenterHorizontally) {
-            OutlinedButton(onClick = { fetchdevices(mybluetooth,context,intentlauncher) },
+            OutlinedButton(onClick = {
+
+
+                try {
+//                                    sp?.edit()?.putString("bluetoothAddress",item.address)?.apply()
+                    val sdkVersion = android.os.Build.VERSION.SDK_INT
+                    if (sdkVersion >= android.os.Build.VERSION_CODES.S)
+                    {
+                        if(ActivityCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.BLUETOOTH_CONNECT
+                            ) == PackageManager.PERMISSION_GRANTED)
+                        {
+                            fetchdevices(mybluetooth,context,intentlauncher)
+                        }
+                        else
+                        {
+                            Toast.makeText(
+                                context,
+                                "Permissions not Granted",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            checkpermissions = true
+                        }
+                    }
+                    else
+                    {
+                        fetchdevices(mybluetooth,context,intentlauncher)
+                    }
+
+                } catch (e: IOException) {
+                    Toast
+                        .makeText(
+                            context,
+                            e.message.toString(),
+                            Toast.LENGTH_LONG
+                        )
+                        .show()
+                }
+
+                                     },
                 colors = ButtonDefaults.outlinedButtonColors(backgroundColor = Color.Blue, contentColor = Color.White),
                 modifier = Modifier.padding(65.dp)) {
                 Text(text = "Scan Devices", fontSize = 20.sp)
@@ -116,9 +147,31 @@ fun connection(navHostController: NavHostController, context: Context, mybluetoo
                                     if (item != null) {
                                         try {
 //                                    sp?.edit()?.putString("bluetoothAddress",item.address)?.apply()
-                                            mybluetooth
-                                                .clientclass(item)
-                                                .start()
+                                            val sdkVersion = android.os.Build.VERSION.SDK_INT
+                                            if (sdkVersion >= android.os.Build.VERSION_CODES.S) {
+                                                if (ActivityCompat.checkSelfPermission(
+                                                        context,
+                                                        Manifest.permission.BLUETOOTH_CONNECT
+                                                    ) == PackageManager.PERMISSION_GRANTED
+                                                ) {
+                                                    mybluetooth
+                                                        .clientclass(item)
+                                                        .start()
+                                                } else {
+                                                    Toast
+                                                        .makeText(
+                                                            context,
+                                                            "Permissions not Granted",
+                                                            Toast.LENGTH_LONG
+                                                        )
+                                                        .show()
+                                                }
+                                            } else {
+                                                mybluetooth
+                                                    .clientclass(item)
+                                                    .start()
+                                            }
+
                                         } catch (e: IOException) {
                                             Toast
                                                 .makeText(
@@ -136,17 +189,18 @@ fun connection(navHostController: NavHostController, context: Context, mybluetoo
                                 backgroundColor = Color.White,
                                 contentColor = Color.Blue,
                                 shape = RoundedCornerShape(20.dp)) {
-                                if (ActivityCompat.checkSelfPermission(
-                                        context,
-                                        Manifest.permission.BLUETOOTH_CONNECT
-                                    ) != PackageManager.PERMISSION_GRANTED
-                                ) {
-                                    Toast.makeText(
-                                        context,
-                                        "Permissions not Granted",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                }
+//                                if (
+//                                    ActivityCompat.checkSelfPermission(
+//                                        context,
+//                                        Manifest.permission.BLUETOOTH_CONNECT
+//                                    ) != PackageManager.PERMISSION_GRANTED
+//                                ) {
+//                                    Toast.makeText(
+//                                        context,
+//                                        "Permissions not Granted",
+//                                        Toast.LENGTH_LONG
+//                                    ).show()
+//                                }
                                 item?.name?.let {
                                     Text(
                                         text = it,
@@ -190,6 +244,7 @@ fun connection(navHostController: NavHostController, context: Context, mybluetoo
             }
         }
     }
+
 }
 
 

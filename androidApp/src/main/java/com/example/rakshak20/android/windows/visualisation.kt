@@ -56,9 +56,20 @@ fun visualisation(context: Context, mybluetooth: MyBluetooth) {
 //        var data20 = data.takeLast(20)
         var datalast = if(data.size > 5) {data.last().value.toString()} else {""}
         Column(verticalArrangement = Arrangement.Top){
-            Text(text = "${screen.toUpperCase()}  ${datalast}", modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Transparent), textAlign = TextAlign.Center, fontFamily = FontFamily.Default, fontWeight = FontWeight.ExtraBold, fontSize = 30.sp, fontStyle = FontStyle.Normal)
+            if(screen == SCREEN1){
+                Text(
+                    text = "${screen.toUpperCase()}  ${datalast}",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.Transparent),
+                    textAlign = TextAlign.Center,
+                    fontFamily = FontFamily.Default,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 30.sp,
+                    fontStyle = FontStyle.Normal
+                )
+            }
+
             Spacer(modifier = Modifier.height(50.dp))
             Crossfade(targetState = screen) { it ->
                 when (it) {
