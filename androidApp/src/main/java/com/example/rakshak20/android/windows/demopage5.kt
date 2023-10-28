@@ -26,6 +26,7 @@ import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import co.yml.charts.common.extensions.isNotNull
 import com.example.rakshak20.android.functions.MyBluetooth
 import com.example.rakshak20.android.windows.SCREEN1
 import com.example.rakshak20.android.windows.SCREEN2
@@ -114,23 +115,40 @@ fun LineChartComposable(myBluetooth: MyBluetooth , type : String) {
         {
             if(data.size > 0)
             {
-                var values = data.toList().map { it.value.toDouble() }
-                var avgvalue = values.sum()/values.size
-                Text(
-                    text = "Average $type : " + avgvalue.toString(),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            Transparent
-                        ),
-                    color = Blue,
+                var values = data.toList().filterNotNull().filter { it.value != 0f }.map { it.value.toDouble() }
+                if(values.size > 0)
+                {
+                    var avgvalue = values.sum()/values.size
+                    Text(
+                        text = "Average $type : " + avgvalue.toFloat().toString(),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                Transparent
+                            ),
+                        color = Blue,
 
-                    fontFamily = FontFamily.Default,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 20.sp,
-                    fontStyle = FontStyle.Normal
-                )
+                        fontFamily = FontFamily.Default,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 20.sp,
+                        fontStyle = FontStyle.Normal
+                    )
+                }
+                else
+                {
+                    Text(
+                        text = "No Data to show....",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                Transparent
+                            ),
+                        color = Blue
+                    )
+                }
+
             }
             else
             {

@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.rakshak20.android.functions.MyBluetooth
 import com.example.rakshak20.android.navigation.screen
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 
 //import com.example.featherandroidtasks.ui.theme.FeatherAndroidTasksTheme
 
@@ -34,32 +34,36 @@ fun countdownTimer(
         mutableStateOf(0)
     }
     var dot = "."
+    var job : Job? = null
 
     if(flag == 1){
         DisposableEffect(Unit) {
+
+
             val timer = object : CountDownTimer((countdownDuration * 1000).toLong(), 1000) {
                 override fun onTick(millisUntilFinished: Long) {
                     timeRemaining = (millisUntilFinished / 1000).toInt()
+
+                  CoroutineScope(Dispatchers.IO).launch {
                     bluetooth.receive.getBLEvalue()
+                  }
+
                 }
 
                 override fun onFinish() {
+//                    job?.cancel()
                     timeRemaining = 0
 //                    bluetooth.receive.stopThread()
                 }
             }
-//            bluetooth.receive.startThread()
-//            bluetooth.receive.start()
-//            bluetooth.getmessage = true
+
 
 
 
             timer.start()
             onDispose {
                 timer.cancel()
-//                bluetooth.receive.interrupt()
-//                bluetooth.getmessage = false
-//                bluetooth.receive.stopThread()
+
             }
         }
     }
@@ -97,13 +101,13 @@ fun countdownTimer(
             Text(text = timeRemaining.toString(), color = Color.Magenta, fontStyle = FontStyle.Normal, fontSize = 30.sp, fontWeight = FontWeight.ExtraBold, fontFamily = FontFamily.Default)
             if(timeRemaining == 0)
             {
-//        bluetooth.receive.stop()
+
                 Button(onClick = {
                     navHostController.navigate(screen.visualise.route) }) {
                     Text(text = "Visualize Now")
                 }
 
-//                navHostController.navigate(screen.visualise.route)
+
             }
         }
     }

@@ -2,6 +2,8 @@ package com.example.rakshak20.android.navigation
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -90,6 +92,7 @@ fun navgraph1(
 
         composable(screen.countdown.route)
         {
+
             countdownTimer(countdownDuration = 60, navHostController , context , bluetooth!!)
         }
 

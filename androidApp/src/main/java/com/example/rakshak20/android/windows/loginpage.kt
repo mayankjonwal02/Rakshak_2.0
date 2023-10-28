@@ -103,7 +103,8 @@ fun LoginScreen(navHostController: NavHostController, context: Context) {
                                Icon(
                                    imageVector = if (isPasswordVisible) Icons.Default.VisibilityOff
                                    else Icons.Default.Visibility,
-                                   contentDescription = null
+                                   contentDescription = null,
+                                   tint = Color.DarkGray
                                )
                            }
                        },
@@ -389,7 +390,8 @@ fun RegistrationScreen(navHostController: NavHostController, context: Context) {
                             Icon(
                                 imageVector = if (isPasswordVisible) Icons.Default.VisibilityOff
                                 else Icons.Default.Visibility,
-                                contentDescription = null
+                                contentDescription = null,
+                                tint = Color.DarkGray
                             )
                         }
                     },
@@ -421,7 +423,8 @@ fun RegistrationScreen(navHostController: NavHostController, context: Context) {
                             Icon(
                                 imageVector = if (isPasswordVisible1) Icons.Default.VisibilityOff
                                 else Icons.Default.Visibility,
-                                contentDescription = null
+                                contentDescription = null,
+                                tint = Color.DarkGray
                             )
                         }
                     },
