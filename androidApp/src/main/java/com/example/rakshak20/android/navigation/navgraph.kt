@@ -2,7 +2,7 @@ package com.example.rakshak20.android.navigation
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.MutableState
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -63,10 +63,12 @@ fun navgraph(
 
 @Composable
 fun navgraph1(
-    oldnavcon : NavController,
+    oldnavcon: NavController,
     navHostController: NavHostController,
     context: Context,
-    start: String) {
+    start: String,
+    current_screen: MutableState<String>
+) {
 
     bluetooth = MyBluetooth()
     bluetooth!!.initialize(context)
@@ -76,12 +78,13 @@ fun navgraph1(
 
         composable(screen.visualise.route) // visualisation screen
         {
+            current_screen.value = "visualisation"
             visualisation(context, bluetooth!!)
         }
         composable(screen.connection.route)
         {
 
-
+            current_screen.value = "connection"
             connection(navHostController,context, bluetooth!!)
 
         }
@@ -90,7 +93,9 @@ fun navgraph1(
 
         composable(screen.countdown.route)
         {
-            countdownTimer(countdownDuration = 60, navHostController , context , bluetooth!!)
+
+            current_screen.value = "countdown"
+            countdownTimer(countdownDuration = 60, navHostController , context , bluetooth!! , current_screen)
         }
 
 

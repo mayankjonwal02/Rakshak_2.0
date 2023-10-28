@@ -22,7 +22,7 @@ class ApiViewmodel(context: Context) : ViewModel()
 
     lateinit var apiService : ApiService
     var sp = getSharedPreferences(context)
-    var ipaddress = sp?.getString("ipaddress","0.0.0.0")
+    var ipaddress =   "3.111.170.27"  //sp?.getString("ipaddress","0.0.0.0")
     private val trustAllManager = object : X509TrustManager {
         override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
         override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {}

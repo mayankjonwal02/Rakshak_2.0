@@ -26,13 +26,10 @@ import androidx.lifecycle.ViewModel
 import co.yml.charts.common.extensions.isNotNull
 import io.jetchart.line.Point
 import com.example.rakshak20.android.constantvariables.uuid
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -222,8 +219,8 @@ class MyBluetooth() : ViewModel() {
     }
 
     private fun handleCompleteData() {
-        Log.i("TAG1", "$ecg $heartrate $spo2 $temp")
-        Toast.makeText(context,"$ecg $heartrate $spo2 $temp",Toast.LENGTH_SHORT).show()
+//        Log.i("TAG1", "$ecg $heartrate $spo2 $temp")
+//        Toast.makeText(context,"$ecg $heartrate $spo2 $temp",Toast.LENGTH_SHORT).show()
         dbHandler.addPatientData(
             patientId = patientid,
             ecg = ecg.toString().toFloat(),
@@ -430,7 +427,7 @@ class MyBluetooth() : ViewModel() {
             outputStream = tempOut ?: return
         }
 
-        fun getBLEvalue()
+        suspend fun getBLEvalue()
         {
             var buffer = ByteArray(1024)
             var bytes: Int
@@ -441,8 +438,9 @@ class MyBluetooth() : ViewModel() {
                     .sendToTarget()
             } catch (e: IOException) {
                 e.printStackTrace()
-                Toast.makeText(context, "Error parsing data", Toast.LENGTH_SHORT).show()
-//                        isRunning = false // Stop the thread on IO exception
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Error parsing data", Toast.LENGTH_SHORT).show()
+                }//                        isRunning = false // Stop the thread on IO exception
             }
 
         }

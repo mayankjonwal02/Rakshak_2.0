@@ -59,9 +59,10 @@ fun splash(navHostController: NavHostController, context: Context) {
             delayMillis = 30,
             easing = LinearOutSlowInEasing
         ))
-        if(sp?.getString("ipaddress","0.0.0.0") == "0.0.0.0" || sp?.getString("patientid","") == "" || sp?.getString("password","") == "")
+//        sp?.getString("ipaddress","0.0.0.0") == "0.0.0.0" ||
+        if(sp?.getString("patientid","") == "" || sp?.getString("password","") == "")
         {
-            navHostController.navigate(screen.ipscreen.route)
+            navHostController.navigate(screen.login.route)
         }
         else
         {

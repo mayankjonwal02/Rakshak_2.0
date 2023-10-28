@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.rakshak20.android.functions.MyBluetooth
 import com.example.rakshak20.android.navigation.screen
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 
 //import com.example.featherandroidtasks.ui.theme.FeatherAndroidTasksTheme
 
@@ -27,39 +27,45 @@ fun countdownTimer(
     countdownDuration: Int,
     navHostController: NavHostController,
     context: Context,
-    bluetooth: MyBluetooth
+    bluetooth: MyBluetooth,
+    current_screen: MutableState<String>
 ) {
     var timeRemaining by remember { mutableStateOf(countdownDuration) }
     var flag by remember {
         mutableStateOf(0)
     }
     var dot = "."
+    var job : Job? = null
 
     if(flag == 1){
         DisposableEffect(Unit) {
+
+
             val timer = object : CountDownTimer((countdownDuration * 1000).toLong(), 1000) {
                 override fun onTick(millisUntilFinished: Long) {
                     timeRemaining = (millisUntilFinished / 1000).toInt()
+
+                  CoroutineScope(Dispatchers.IO).launch {
                     bluetooth.receive.getBLEvalue()
+                  }
+
                 }
 
                 override fun onFinish() {
+//                    job?.cancel()
                     timeRemaining = 0
+                    current_screen.value = "countdown"
 //                    bluetooth.receive.stopThread()
                 }
             }
-//            bluetooth.receive.startThread()
-//            bluetooth.receive.start()
-//            bluetooth.getmessage = true
+
 
 
 
             timer.start()
             onDispose {
                 timer.cancel()
-//                bluetooth.receive.interrupt()
-//                bluetooth.getmessage = false
-//                bluetooth.receive.stopThread()
+
             }
         }
     }
@@ -77,33 +83,53 @@ fun countdownTimer(
         if(flag == 0)
         {
             OutlinedButton(onClick = {
-                bluetooth.receive.startThread()
+                current_screen.value = "countdown-start"
                 flag = 1}, border = BorderStroke(3.dp,Color.Blue),colors = ButtonDefaults.outlinedButtonColors(backgroundColor = Color.Transparent, contentColor = Color.Blue,)) {
                 Text(text = "START")
             }
         }
         else
         {
-            Text(
-                text = "Fetching Data"+dot.repeat(5 - timeRemaining % 5),
-                style = MaterialTheme.typography.h5,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            , color = Color.Black
-            )
+            if(current_screen.value == "countdown-start"){
+                Text(
+                    text = "Fetching Data" + dot.repeat(5 - timeRemaining % 5),
+                    style = MaterialTheme.typography.h5,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center, color = Color.Black
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Text(text = timeRemaining.toString(), color = Color.Magenta, fontStyle = FontStyle.Normal, fontSize = 30.sp, fontWeight = FontWeight.ExtraBold, fontFamily = FontFamily.Default)
+                Text(
+                    text = timeRemaining.toString(),
+                    color = Color.Magenta,
+                    fontStyle = FontStyle.Normal,
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontFamily = FontFamily.Default
+                )
+            }
+            else
+            {
+                Text(
+                    text = "Click to Visualize",
+                    style = MaterialTheme.typography.h5,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center, color = Color.Black
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
             if(timeRemaining == 0)
             {
-//        bluetooth.receive.stop()
+
                 Button(onClick = {
+                    current_screen.value = "countdown"
                     navHostController.navigate(screen.visualise.route) }) {
                     Text(text = "Visualize Now")
                 }
 
-//                navHostController.navigate(screen.visualise.route)
+
             }
         }
     }

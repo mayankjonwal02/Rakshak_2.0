@@ -37,6 +37,9 @@ fun mainwindow(
     navHostController: NavHostController,
     context: Context
 ) {
+    var current_screen = remember {
+        mutableStateOf("")
+    }
 
     var context = LocalContext.current
     var navcontroller = rememberNavController()
@@ -51,30 +54,40 @@ fun mainwindow(
                  backgroundColor = Color.Transparent,
                      contentColor = Color.Gray,
                      navigationIcon = {
-                         IconButton(onClick = { coroutinescope.launch { scaffoldstate.drawerState.open() }}) {
-                             androidx.compose.material.Icon(imageVector = Icons.Default.Menu, contentDescription = "")
+                         IconButton(onClick = { if(current_screen.value != "countdown-start"){ coroutinescope.launch { scaffoldstate.drawerState.open() } }}) {
+                             androidx.compose.material.Icon(imageVector = Icons.Default.Menu, contentDescription = "" , tint =  if(current_screen.value != "countdown-start"){Color.Black} else { Color.LightGray})
                          }
                      }
                  )
         },
         drawerShape = RoundedCornerShape(20.dp),
         drawerContent = {
+//            if(current_screen.value != "countdown-start"){
 //            Text(text = "Rakshak", color = Color.Blue, fontFamily = FontFamily.Default, fontStyle = FontStyle.Normal, fontWeight = FontWeight.ExtraBold,fontSize = 50.sp, textAlign = TextAlign.Center, modifier = androidx.compose.ui.Modifier.fillMaxWidth())
-            mynavdrawer(navHostController,navcontroller)
+                if (current_screen.value != "countdown-start") {
+                    mynavdrawer(navHostController, navcontroller, current_screen)
+                }
+//            }
         },
         drawerBackgroundColor = Color.White,
-        backgroundColor = Color.White
+        backgroundColor = Color.White,
+
 
     ) {
-        navgraph1(oldnavcon = navHostController, navHostController = navcontroller, context = context, start = screen.connection.route)
+        navgraph1(oldnavcon = navHostController, navHostController = navcontroller, context = context, start = screen.connection.route , current_screen)
     }
 }
 
 
 @Composable
-fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostController) {
+fun mynavdrawer(
+    navcontroller: NavHostController,
+    navcontroller1: NavHostController,
+    current_screen: MutableState<String>
+) {
 
 //    var currentPage by remember { mutableStateOf(screen.connection.route) }
+
     var context = LocalContext.current
     var sp = remember {
         getSharedPreferences(context)
@@ -125,7 +138,7 @@ fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostControl
                     try {
                         val connectionResponse = apiViewmodel.getconnection()
 
-                       var job4 = GlobalScope.launch(Dispatchers.Main){
+                        var job4 = GlobalScope.launch(Dispatchers.Main) {
                             Toast
                                 .makeText(context, connectionResponse, Toast.LENGTH_SHORT)
                                 .show()
@@ -137,7 +150,7 @@ fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostControl
                             val data = dbHandler.getAllPatientData()
 
 
-                            var job2 = CoroutineScope(Dispatchers.IO).launch{
+                            var job2 = CoroutineScope(Dispatchers.IO).launch {
                                 for (i in data) {
                                     try {
                                         val response = apiViewmodel.senddataByAPI(
@@ -169,7 +182,7 @@ fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostControl
                             }
                             job2.join()
                         } else {
-                             withContext(Dispatchers.Main) {
+                            withContext(Dispatchers.Main) {
                                 Toast
                                     .makeText(context, "Connection Failed", Toast.LENGTH_SHORT)
                                     .show()
@@ -184,8 +197,6 @@ fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostControl
                 }
 
 
-
-
             }
 
             .background(Color.Transparent)
@@ -198,37 +209,45 @@ fun mynavdrawer(navcontroller: NavHostController, navcontroller1: NavHostControl
 
     }
     Spacer(modifier = androidx.compose.ui.Modifier.height(6.dp))
-    Row(
-        modifier = androidx.compose.ui.Modifier
-            .padding(10.dp)
-            .fillMaxWidth()
+
+        Row(
+            modifier = androidx.compose.ui.Modifier
+                .padding(10.dp)
+                .fillMaxWidth()
 //            .height(10.dp)
-            .clickable {
+                .clickable {
 
-                sp
-                    ?.edit()
-                    ?.putString("patientid", "")
-                    ?.apply()
-                sp
-                    ?.edit()
-                    ?.putString("password", "")
-                    ?.apply()
+                    if (current_screen.value != "countdown-start") {
+                        sp
+                            ?.edit()
+                            ?.putString("patientid", "")
+                            ?.apply()
+                        sp
+                            ?.edit()
+                            ?.putString("password", "")
+                            ?.apply()
 
-                bluetooth?.socket?.close()
+                        bluetooth?.socket?.close()
 
-                navcontroller.navigate(screen.ipscreen.route)
+                        navcontroller.navigate(screen.login.route)
+                    }
 
 
-            }
+                }
 
-            .background(Color.Transparent)
-            .padding(10.dp),
-    ) {
+                .background(Color.Transparent)
+                .padding(10.dp),
+        ) {
 
-        Icon(imageVector = Icons.Filled.Logout, contentDescription = "")
-        Spacer(modifier = androidx.compose.ui.Modifier.width(16.dp))
-        Text(text = "Logout", modifier = androidx.compose.ui.Modifier.weight(1f), color = Color.Black)
+            Icon(imageVector = Icons.Filled.Logout, contentDescription = "")
+            Spacer(modifier = androidx.compose.ui.Modifier.width(16.dp))
+            Text(
+                text = "Logout",
+                modifier = androidx.compose.ui.Modifier.weight(1f),
+                color =  if(current_screen.value != "countdown-start"){ Color.Black } else {Color.LightGray}
+            )
 
-    }
+        }
+//    }
     Spacer(modifier = androidx.compose.ui.Modifier.height(6.dp))
 }
