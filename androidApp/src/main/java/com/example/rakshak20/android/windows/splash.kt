@@ -62,7 +62,7 @@ fun splash(navHostController: NavHostController, context: Context) {
 //        sp?.getString("ipaddress","0.0.0.0") == "0.0.0.0" ||
         if(sp?.getString("patientid","") == "" || sp?.getString("password","") == "")
         {
-            navHostController.navigate(screen.login.route)
+            navHostController.navigate(screen.option.route)
         }
         else
         {

@@ -152,6 +152,7 @@ fun mynavdrawer(
 
                             var job2 = CoroutineScope(Dispatchers.IO).launch {
                                 for (i in data) {
+                                    Log.e("TAG1",i.toString())
                                     try {
                                         val response = apiViewmodel.senddataByAPI(
                                             medicaldata(
@@ -160,9 +161,13 @@ fun mynavdrawer(
                                                 heartrate = i.heartRate,
                                                 ecg = i.ecg,
                                                 temperature = i.temperature,
-                                                timestamp = i.timestamp
+                                                timestamp = i.timestamp,
+                                                Medical_Id = i.Medical_id
                                             )
+
+
                                         )
+                                        Log.e("TAG1",response.toString())
                                         // Handle response if needed
                                     } catch (e: IOException) {
                                         var job3 = GlobalScope.launch(Dispatchers.Main) {
@@ -224,12 +229,16 @@ fun mynavdrawer(
                             ?.apply()
                         sp
                             ?.edit()
+                            ?.putString("medicalid", "")
+                            ?.apply()
+                        sp
+                            ?.edit()
                             ?.putString("password", "")
                             ?.apply()
 
                         bluetooth?.socket?.close()
 
-                        navcontroller.navigate(screen.login.route)
+                        navcontroller.navigate(screen.option.route)
                     }
 
 

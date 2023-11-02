@@ -15,7 +15,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
@@ -25,28 +24,28 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.rakshak20.android.API.ApiViewmodel
+import com.example.rakshak20.android.API.DoctorData
 import com.example.rakshak20.android.API.LoginRequest
 import com.example.rakshak20.android.API.Registrationdata
 //import com.example.rakshak20.android.API.LoginRequest
 import com.example.rakshak20.android.functions.getSharedPreferences
 import com.example.rakshak20.android.navigation.screen
 import kotlinx.coroutines.*
-import java.io.IOException
 
 //import com.example.rakshak20.android.functions.getShredPreferences
 
 @Composable
-fun LoginScreen(navHostController: NavHostController, context: Context) {
+fun LoginScreen(navHostController: NavHostController, context: Context, user: String?) {
     var sp = remember{ getSharedPreferences(context) }
-    var patientId by remember { mutableStateOf(sp?.getString("patientid","")) }
+    var Id by remember { if(user == "Patient"){ mutableStateOf(sp?.getString("patientid", "")) }else{mutableStateOf(sp?.getString("medicalid", "")) } }
     var password by remember { mutableStateOf(sp?.getString("password","")) }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
+//    var myuser = user
 
 
     Box(modifier = Modifier
@@ -64,7 +63,7 @@ fun LoginScreen(navHostController: NavHostController, context: Context) {
                .padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
                Spacer(modifier = Modifier.height(20.dp))
                Text(
-                   text = "Login", color = Color.Blue,
+                   text = "Login : $user", color = Color.Blue,
                    modifier = Modifier
                        .fillMaxWidth()
                        .background(
@@ -72,11 +71,11 @@ fun LoginScreen(navHostController: NavHostController, context: Context) {
                        ), fontWeight = FontWeight.ExtraBold, fontSize = 30.sp, fontStyle = FontStyle.Normal, textAlign = TextAlign.Center, fontFamily = FontFamily.Serif
                )
                Spacer(modifier = Modifier.height(20.dp))
-               patientId?.let {
+               Id?.let {
                    OutlinedTextField(
                        value = it,
-                       onValueChange = { patientId = it },
-                       label = { Text("Patient ID") },
+                       onValueChange = { Id = it },
+                       label = { Text(if(user == "Patient"){ "Patient ID" }else{"Medical ID"}) },
                        singleLine = true,
                        keyboardOptions = KeyboardOptions.Default.copy(
                            keyboardType = KeyboardType.Text
@@ -123,29 +122,72 @@ fun LoginScreen(navHostController: NavHostController, context: Context) {
                var apiViewmodel = ApiViewmodel(context)
                Button(
                    onClick = {
-                       CoroutineScope(Dispatchers.Main).launch {
-                           try {
-                               val loginRequest = LoginRequest(patientid = patientId!!, password = password!!)
-                               val response = apiViewmodel.loginByAPI(loginRequest)
-                               GlobalScope.launch(Dispatchers.Main) {
-                                   Toast.makeText(context, response, Toast.LENGTH_LONG).show()
-                               }
-                                   if(response.toString().equals("ok"))
-                                   {
-                                       sp?.edit()?.putString("patientid",patientId)?.apply()
-                                       sp?.edit()?.putString("password",password)?.apply()
+                       if(user == "Patient"){
+                           CoroutineScope(Dispatchers.Main).launch {
+                               try {
+                                   val loginRequest =
+                                       LoginRequest(patientid = Id!!, password = password!!)
+                                   val response = apiViewmodel.loginByAPI(loginRequest)
+                                   GlobalScope.launch(Dispatchers.Main) {
+                                       Toast.makeText(context, response, Toast.LENGTH_LONG).show()
+                                   }
+                                   if (response.toString().equals("ok")) {
+                                       sp?.edit()?.putString("patientid", Id)?.apply()
+                                       sp?.edit()?.putString("password", password)?.apply()
+                                       sp?.edit()?.putString("medicalid", "Self")?.apply()
+                                       sp?.edit()?.putString("user", "patient")?.apply()
                                        navHostController.navigate(screen.main.route)
                                    }
-                                   Log.e("TAG1",response.toString())
+                                   Log.e("TAG1", response.toString())
 
-                           } catch (e: Exception) {
-                               // Handle the exception appropriately, e.g., display an error message
+                               } catch (e: Exception) {
+                                   // Handle the exception appropriately, e.g., display an error message
 
-                               GlobalScope.launch(Dispatchers.Main){
-                                   Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_LONG)
-                                       .show()
+                                   GlobalScope.launch(Dispatchers.Main) {
+                                       Toast.makeText(
+                                           context,
+                                           "Error: ${e.message}",
+                                           Toast.LENGTH_LONG
+                                       )
+                                           .show()
+                                   }
+
                                }
+                           }
+                       }
+                       else
+                       {
 
+                           CoroutineScope(Dispatchers.Main).launch {
+                               try {
+                                   val doctorData =
+                                       DoctorData(Medical_id  = Id!!, Password = password!!)
+                                   val response = apiViewmodel.loginByAPI_medical(doctorData)
+                                   GlobalScope.launch(Dispatchers.Main) {
+                                       Toast.makeText(context, response, Toast.LENGTH_LONG).show()
+                                   }
+                                   if (response.toString().equals("ok")) {
+                                       sp?.edit()?.putString("medicalid", Id)?.apply()
+                                       sp?.edit()?.putString("password", password)?.apply()
+                                       sp?.edit()?.putString("user", "doctor")?.apply()
+
+                                       navHostController.navigate(screen.main.route)
+                                   }
+                                   Log.e("TAG1", response.toString())
+
+                               } catch (e: Exception) {
+                                   // Handle the exception appropriately, e.g., display an error message
+
+                                   GlobalScope.launch(Dispatchers.Main) {
+                                       Toast.makeText(
+                                           context,
+                                           "Error: ${e.message}",
+                                           Toast.LENGTH_LONG
+                                       )
+                                           .show()
+                                   }
+
+                               }
                            }
                        }
 

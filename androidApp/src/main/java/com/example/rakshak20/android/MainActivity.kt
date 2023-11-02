@@ -1,7 +1,7 @@
 package com.example.rakshak20.android
 
 
-import MedicalDataForm
+//import MedicalDataForm
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,7 +18,7 @@ import com.example.rakshak20.android.navigation.navgraph1
 import com.example.rakshak20.android.navigation.screen
 import com.example.rakshak20.android.windows.*
 import countdownTimer
-import demopage4
+//import demopage4
 import io.jetchart.line.Point
 import kotlin.random.Random
 

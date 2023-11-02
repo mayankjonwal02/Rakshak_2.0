@@ -15,9 +15,13 @@ interface ApiService {
     @POST("registration-final.php")
     suspend fun register(@Body registrationdata: Registrationdata): Response<connectionResponseData>
 
+    @Headers("Content-Type: application/json")
+    @POST("medical-info-api.php")
+    suspend fun login_medical(@Body doctorData: DoctorData): Response<connectionResponseData>
+
 //
         @Headers("Content-Type: application/json")
-        @POST("datainput.php")
+        @POST("medical-data-api.php")
         suspend fun sharedata(@Body medicaldata: medicaldata): ResponseBody
 
     //    @FormUrlEncoded
@@ -35,12 +39,15 @@ interface ApiService {
                          @Field("ecg") ecg: Float,
                          @Field("spo2") spo2: Float,
                          @Field("temperature") temperature: Float,
+
                          ) : ResponseBody
 
 }
 
 
 data class LoginRequest(val patientid: String, val password: String)
+
+data class  DoctorData(val Medical_id : String ,  val Password : String)
 data class connectionResponseData(
     val status: String,
     val message : String
@@ -62,5 +69,6 @@ data class medicaldata(
     var heartrate:Float,
     var ecg : Float,
     var temperature : Float,
-    var timestamp : String
+    var timestamp : String,
+    var Medical_Id : String
 )

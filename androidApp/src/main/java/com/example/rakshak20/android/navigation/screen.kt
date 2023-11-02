@@ -17,4 +17,8 @@ sealed class screen(var route : String)
     object  ipscreen : screen("ipscreen")
 
     object countdown : screen("countdown")
+
+    object option :  screen("option")
+
+    object  enterpid : screen("enterpid")
 }

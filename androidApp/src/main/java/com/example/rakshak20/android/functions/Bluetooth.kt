@@ -226,7 +226,8 @@ class MyBluetooth() : ViewModel() {
             ecg = ecg.toString().toFloat(),
             heartRate = heartrate.toString().toFloat(),
             spo2 = spo2.toString().toFloat(),
-            temperature = temp.toString().toFloat()
+            temperature = temp.toString().toFloat(),
+            medicalId = sp.getString("medicalid","Self")
         )
 
         if (ecg != "0" || ecg != "" ) {

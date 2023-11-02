@@ -66,6 +66,21 @@ class ApiViewmodel(context: Context) : ViewModel()
         }
     }
 
+    suspend fun loginByAPI_medical(doctorData: DoctorData): String {
+        try {
+//            val loginRequest = LoginRequest(patientid = "example_patient_id", password = "example_password")
+
+            var responce = apiService.login_medical(doctorData).body()?.status
+            Log.e("TAG1",responce.toString())
+            return  responce.toString()
+        }
+        catch (e:Exception)
+        {
+            return e.message.toString()
+            Log.e("TAG1",e.message.toString())
+        }
+    }
+
     suspend fun getconnection(): String{
         try {
             var responce = apiService.connect()

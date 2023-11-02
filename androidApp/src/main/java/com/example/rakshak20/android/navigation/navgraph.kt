@@ -34,13 +34,15 @@ fun navgraph(
 
 
 
-        composable(screen.login.route)
+        composable(screen.login.route+"/{user}")
         {
-            LoginScreen(navHostController,context)
+            var user = it.arguments?.getString("user")
+            LoginScreen(navHostController,context,user)
         }
 
         composable(screen.registration.route)
         {
+
             RegistrationScreen(navHostController,context)
         }
 
@@ -53,6 +55,14 @@ fun navgraph(
         {
             ipscreen(context = context, navHostController)
         }
+
+        composable(screen.option.route)
+        {
+
+
+            option(navHostController)
+        }
+
 
 
 
@@ -98,6 +108,13 @@ fun navgraph1(
             countdownTimer(countdownDuration = 60, navHostController , context , bluetooth!! , current_screen)
         }
 
+
+
+
+        composable(screen.enterpid.route)
+        {
+            enterpatientid(navHostController)
+        }
 
 
 

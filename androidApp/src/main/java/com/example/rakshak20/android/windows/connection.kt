@@ -230,8 +230,9 @@ fun connection(navHostController: NavHostController, context: Context, mybluetoo
 
             if(status == "Connected"){
 
+                var user = sp.getString("user","patient")
                 OutlinedButton(
-                    onClick = { navHostController.navigate(screen.countdown.route) },
+                    onClick = { if(user == "patient"){ navHostController.navigate(screen.countdown.route) } else { navHostController.navigate(screen.enterpid.route)} },
                     colors = ButtonDefaults.outlinedButtonColors(
                         backgroundColor = Color.Blue,
                         contentColor = Color.White
