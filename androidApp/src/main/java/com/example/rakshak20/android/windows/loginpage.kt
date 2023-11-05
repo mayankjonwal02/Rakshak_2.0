@@ -167,6 +167,7 @@ fun LoginScreen(navHostController: NavHostController, context: Context, user: St
                                        Toast.makeText(context, response, Toast.LENGTH_LONG).show()
                                    }
                                    if (response.toString().equals("ok")) {
+                                       sp?.edit()?.putString("patientid", "none")?.apply()
                                        sp?.edit()?.putString("medicalid", Id)?.apply()
                                        sp?.edit()?.putString("password", password)?.apply()
                                        sp?.edit()?.putString("user", "doctor")?.apply()
@@ -201,8 +202,17 @@ fun LoginScreen(navHostController: NavHostController, context: Context, user: St
                ) {
                    Text(text = "Login")
                }
-               OutlinedButton(onClick = {navHostController.navigate(screen.registration.route )}, border = BorderStroke(3.dp, Color.Blue),colors = ButtonDefaults.outlinedButtonColors(backgroundColor = Color.White, contentColor = Color.Blue)) {
-                   Text(text = "Not Registered Yet ? Sign Up")
+               if(user == "Patient"){
+                   OutlinedButton(
+                       onClick = { navHostController.navigate(screen.registration.route) },
+                       border = BorderStroke(3.dp, Color.Blue),
+                       colors = ButtonDefaults.outlinedButtonColors(
+                           backgroundColor = Color.White,
+                           contentColor = Color.Blue
+                       )
+                   ) {
+                       Text(text = "Not Registered Yet ? Sign Up")
+                   }
                }
 
 //               Text(text = "Not Registered Yet ? Sign Up", modifier = Modifier.clickable{navHostController.navigate(screen.registration.route)})
