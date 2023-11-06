@@ -222,7 +222,7 @@ class MyBluetooth() : ViewModel() {
 //        Log.i("TAG1", "$ecg $heartrate $spo2 $temp")
 //        Toast.makeText(context,"$ecg $heartrate $spo2 $temp",Toast.LENGTH_SHORT).show()
         dbHandler.addPatientData(
-            patientId = patientid,
+            patientId = sp.getString("patientid", "NOT FOUND").toString(),
             ecg = ecg.toString().toFloat(),
             heartRate = heartrate.toString().toFloat(),
             spo2 = spo2.toString().toFloat(),

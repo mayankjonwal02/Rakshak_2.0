@@ -524,14 +524,14 @@ fun RegistrationScreen(navHostController: NavHostController, context: Context) {
                                             )
 
                                             // Update UI on the main thread
-                                            GlobalScope.launch(Dispatchers.Main) {
+                                            withContext(Dispatchers.Main) {
                                                 Toast.makeText(
                                                     context,
                                                     response,
                                                     Toast.LENGTH_SHORT
                                                 ).show()
 
-                                                navHostController.navigate(screen.login.route       )
+                                                navHostController.navigate(screen.login.route+"/Patient")
                                             }
                                         } catch (e: Exception) {
                                             // Handle the exception appropriately

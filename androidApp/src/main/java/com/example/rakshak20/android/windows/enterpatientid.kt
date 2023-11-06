@@ -54,7 +54,8 @@ fun enterpatientid(navHostController: NavHostController) {
                         onValueChange = { patientId = it },
                         label = { Text("Enter PatientID") },
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .fillMaxWidth(),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(backgroundColor = Color.White , textColor = Color.Black, focusedBorderColor = Color.Blue, focusedLabelColor = Color.Blue , unfocusedLabelColor = Color.Gray, unfocusedBorderColor = Color.Gray)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
