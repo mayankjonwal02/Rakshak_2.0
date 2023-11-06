@@ -25,6 +25,8 @@ fun navgraph(
     start: String) {
 
 
+
+
     NavHost(navController = navHostController, startDestination = start)
     {
         composable(screen.splash.route)  // splash screen

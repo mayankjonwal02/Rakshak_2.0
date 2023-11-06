@@ -33,6 +33,7 @@ import com.example.rakshak20.android.API.LoginRequest
 import com.example.rakshak20.android.API.Registrationdata
 //import com.example.rakshak20.android.API.LoginRequest
 import com.example.rakshak20.android.functions.getSharedPreferences
+import com.example.rakshak20.android.navigation.bluetooth
 import com.example.rakshak20.android.navigation.screen
 import kotlinx.coroutines.*
 
@@ -122,6 +123,8 @@ fun LoginScreen(navHostController: NavHostController, context: Context, user: St
                var apiViewmodel = ApiViewmodel(context)
                Button(
                    onClick = {
+                       bluetooth?.socket?.close()
+                       bluetooth = null
                        if(user == "Patient"){
                            CoroutineScope(Dispatchers.Main).launch {
                                try {
