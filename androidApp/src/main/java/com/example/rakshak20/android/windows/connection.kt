@@ -113,13 +113,13 @@ fun connection(navHostController: NavHostController, context: Context, mybluetoo
                     }
 
                 } catch (e: IOException) {
-                    Toast
-                        .makeText(
-                            context,
-                            e.message.toString(),
-                            Toast.LENGTH_LONG
-                        )
-                        .show()
+//                    Toast
+//                        .makeText(
+//                            context,
+//                            e.message.toString(),
+//                            Toast.LENGTH_LONG
+//                        )
+//                        .show()
                 }
 
                                      },
@@ -173,13 +173,13 @@ fun connection(navHostController: NavHostController, context: Context, mybluetoo
                                             }
 
                                         } catch (e: IOException) {
-                                            Toast
-                                                .makeText(
-                                                    context,
-                                                    e.message.toString(),
-                                                    Toast.LENGTH_LONG
-                                                )
-                                                .show()
+//                                            Toast
+//                                                .makeText(
+//                                                    context,
+//                                                    e.message.toString(),
+//                                                    Toast.LENGTH_LONG
+//                                                )
+//                                                .show()
                                         }
                                     }
                                 }

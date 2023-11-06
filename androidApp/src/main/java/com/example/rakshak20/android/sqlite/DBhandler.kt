@@ -2,6 +2,9 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class DBHandler(context: Context?) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
 
@@ -24,6 +27,14 @@ class DBHandler(context: Context?) : SQLiteOpenHelper(context, DB_NAME, null, DB
         onCreate(db)
     }
 
+    fun gettimestamp(): String? {
+        var datetime = LocalDateTime.now()
+        var format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        var formattedtimestamp = format.format(datetime)
+        return formattedtimestamp
+    }
+
+
 
     fun addPatientData(patientId: String?, ecg: Float?, heartRate: Float?, spo2: Float?, temperature: Float?, medicalId: String?) {
         val db = this.writableDatabase
@@ -33,7 +44,7 @@ class DBHandler(context: Context?) : SQLiteOpenHelper(context, DB_NAME, null, DB
         values.put(HEART_RATE_COL, heartRate)
         values.put(SPO2_COL, spo2)
         values.put(TEMPERATURE_COL, temperature)
-        values.put(TIMESTAMP_COL, System.currentTimeMillis().toString())
+        values.put(TIMESTAMP_COL, gettimestamp())
         values.put(MEDICAL_ID_COL, medicalId)  // Update this line
 
         db.insert(TABLE_NAME, null, values)

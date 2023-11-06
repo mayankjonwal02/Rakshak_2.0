@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import okhttp3.OkHttpClient
+import retrofit2.Response
 import java.security.cert.X509Certificate
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
@@ -110,6 +111,19 @@ class ApiViewmodel(context: Context) : ViewModel()
         }
     }
 
+    suspend fun checkPatientId(patient: patient): Response<connectionResponseData> {
+        try
+        {
+            val response = apiService.checkPatientId(patient)
+            return response
+        }
+        catch (e:IOException)
+
+        {
+            return Response.error(500, okhttp3.ResponseBody.create(null, "Network Error"))
+        }
+
+    }
 
     suspend fun senddataByAPI(medicaldata: medicaldata): String {
         try {

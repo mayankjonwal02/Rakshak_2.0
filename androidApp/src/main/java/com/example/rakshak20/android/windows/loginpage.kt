@@ -41,8 +41,8 @@ import kotlinx.coroutines.*
 @Composable
 fun LoginScreen(navHostController: NavHostController, context: Context, user: String?) {
     var sp = remember{ getSharedPreferences(context) }
-    var Id by remember { if(user == "Patient"){ mutableStateOf(sp?.getString("patientid", "")) }else{mutableStateOf(sp?.getString("medicalid", "")) } }
-    var password by remember { mutableStateOf(sp?.getString("password","")) }
+    var Id by remember { if(user == "Patient"){ mutableStateOf(sp?.getString("patientid", "")) }else{mutableStateOf(sp?.getString("temp", "")) } }
+    var password by remember { if(user == "Patient"){ mutableStateOf(sp?.getString("password", "")) }else{mutableStateOf(sp?.getString("temp", "")) }  }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
 //    var myuser = user

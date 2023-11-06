@@ -1,5 +1,7 @@
 package com.example.rakshak20.android.windows
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,8 +16,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.rakshak20.android.API.ApiViewmodel
+import com.example.rakshak20.android.API.patient
 import com.example.rakshak20.android.functions.getSharedPreferences
 import com.example.rakshak20.android.navigation.screen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -62,12 +70,40 @@ fun enterpatientid(navHostController: NavHostController) {
 
                     var context = LocalContext.current
                     var sp = getSharedPreferences(context)
+                    var apiViewmodel = ApiViewmodel(context)
                     // Blue Button
                     Button(
                         onClick = {
 
-                            sp?.edit()?.putString("patientid", patientId)?.apply()
-                            navHostController.navigate(screen.countdown.route)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                var response = apiViewmodel.checkPatientId(patient(patientId))
+                                Log.e("TAG1",response.body().toString())
+                                if(response.body()?.status == "ok")
+                                {
+                                    withContext(Dispatchers.Main){
+                                        Toast.makeText(context, response.body()!!.message.toString(),Toast.LENGTH_SHORT).show()
+                                        sp?.edit()?.putString("patientid", patientId)?.apply()
+                                        navHostController.navigate(screen.countdown.route)
+                                    }
+
+
+                                }
+                                else if(response.body()?.status == "not found")
+                                {
+                                    withContext(Dispatchers.Main){
+                                        Toast.makeText(context, response.body()!!.message.toString(),Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                                else
+                                {
+                                    withContext(Dispatchers.Main){
+                                        Toast.makeText(context, "Network Error",Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+
+//                            sp?.edit()?.putString("patientid", patientId)?.apply()
+//                            navHostController.navigate(screen.countdown.route)
 
 
                                   },

@@ -71,6 +71,8 @@ fun mainwindow(
         },
         drawerBackgroundColor = Color.White,
         backgroundColor = Color.White,
+//        drawerGesturesEnabled = false,
+
 
 
     ) {
@@ -105,7 +107,17 @@ fun mynavdrawer(
             Color.Transparent
         )) {
         Spacer(modifier = androidx.compose.ui.Modifier.height(20.dp))
-        Text(text = "User -> " + sp?.getString("patientid","").toString(), fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, fontStyle = FontStyle.Normal, color = Color.Black ,modifier = Modifier
+        var user = sp.getString("user","Not Found")
+        var id = ""
+        if(user == "patient")
+        {
+            id = sp?.getString("patientid","").toString()
+        }
+        else
+        {
+            id = sp?.getString("medicalid","").toString()
+        }
+        Text(text = "User -> " + id, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, fontStyle = FontStyle.Normal, color = Color.Black ,modifier = Modifier
             .fillMaxWidth()
             .background(Color.Transparent)
             .padding(10.dp), textAlign = TextAlign.Center)
@@ -152,7 +164,7 @@ fun mynavdrawer(
 
                             var job2 = CoroutineScope(Dispatchers.IO).launch {
                                 for (i in data) {
-                                    Log.e("TAG1",i.toString())
+                                    Log.e("TAG1", i.toString())
                                     try {
                                         val response = apiViewmodel.senddataByAPI(
                                             medicaldata(
@@ -167,7 +179,7 @@ fun mynavdrawer(
 
 
                                         )
-                                        Log.e("TAG1",response.toString())
+                                        Log.e("TAG1", response.toString())
                                         // Handle response if needed
                                     } catch (e: IOException) {
                                         var job3 = GlobalScope.launch(Dispatchers.Main) {
@@ -208,7 +220,7 @@ fun mynavdrawer(
             .padding(10.dp),
     ) {
 
-        Icon(imageVector = Icons.Filled.Share, contentDescription = "")
+        Icon(imageVector = Icons.Filled.Share, contentDescription = "", tint = Color.Black)
         Spacer(modifier = androidx.compose.ui.Modifier.width(16.dp))
         Text(text = "Sync Data", modifier = androidx.compose.ui.Modifier.weight(1f), color = Color.Black)
 
@@ -222,24 +234,24 @@ fun mynavdrawer(
 //            .height(10.dp)
                 .clickable {
 
-                    if (current_screen.value != "countdown-start") {
-                        sp
-                            ?.edit()
-                            ?.putString("patientid", "")
-                            ?.apply()
-                        sp
-                            ?.edit()
-                            ?.putString("medicalid", "")
-                            ?.apply()
-                        sp
-                            ?.edit()
-                            ?.putString("password", "")
-                            ?.apply()
+//                    if (current_screen.value != "countdown-start") {
+                    sp
+                        ?.edit()
+                        ?.putString("patientid", "")
+                        ?.apply()
+                    sp
+                        ?.edit()
+                        ?.putString("medicalid", "")
+                        ?.apply()
+                    sp
+                        ?.edit()
+                        ?.putString("password", "")
+                        ?.apply()
 
-                        bluetooth?.socket?.close()
+                        CoroutineScope(Dispatchers.IO).launch{ bluetooth?.socket?.close() }
 
-                        navcontroller.navigate(screen.option.route)
-                    }
+                    navcontroller.navigate(screen.option.route)
+//                    }
 
 
                 }
@@ -248,7 +260,7 @@ fun mynavdrawer(
                 .padding(10.dp),
         ) {
 
-            Icon(imageVector = Icons.Filled.Logout, contentDescription = "")
+            Icon(imageVector = Icons.Filled.Logout, contentDescription = "", tint = Color.Black)
             Spacer(modifier = androidx.compose.ui.Modifier.width(16.dp))
             Text(
                 text = "Logout",

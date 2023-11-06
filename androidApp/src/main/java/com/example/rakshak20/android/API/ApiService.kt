@@ -30,6 +30,9 @@ interface ApiService {
 
     @GET("this.php")
     suspend fun connect() : Response<connectionResponseData>
+    @Headers("Content-Type: application/json")
+    @POST("patients-list-api.php")
+    suspend fun checkPatientId(@Body patient: patient) : Response<connectionResponseData>
 
     @FormUrlEncoded
     @POST("create.php")
@@ -52,6 +55,8 @@ data class connectionResponseData(
     val status: String,
     val message : String
 )
+
+data class patient(val patientid : String)
 
 data class Registrationdata(
     var patientid : String,

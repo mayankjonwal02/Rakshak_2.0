@@ -437,11 +437,11 @@ class MyBluetooth() : ViewModel() {
                 bytes = inputStream.read(buffer)
                 handler.obtainMessage(STATE_MESSAGE_RECEIVED, bytes, -1, buffer)
                     .sendToTarget()
-            } catch (e: IOException) {
+            }
+            catch (e: IOException)
+            {
                 e.printStackTrace()
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Error parsing data", Toast.LENGTH_SHORT).show()
-                }//                        isRunning = false // Stop the thread on IO exception
+
             }
 
         }
